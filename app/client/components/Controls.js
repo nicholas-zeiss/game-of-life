@@ -4,7 +4,7 @@ This stateless component holds various buttons used to manipulate the game of li
 
 import React from 'react';
 
-const LifeControl = (props) => {
+const Controls = (props) => {
 	return  (
 		<div id='controls-container'>
 			

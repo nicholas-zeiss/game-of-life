@@ -1,28 +1,31 @@
 /**
-This is the root component of this app. It holds the instance of the Life class which models our game of life state and holds
-all the logic to update it as necessary. It has subcomponents View and Controls, which render the game and handle user input
-respectively.
+This is the root component of this app. It holds the instance of the Life class which models our game of life state (a 2d array
+where 0 is a dead cell and 1 a live cell). It also holds all the logic to update it as necessary. It has subcomponents View and 
+Controls, which render the game and handle user input respectively.
 **/
 
 import React from 'react';
 
 import Life from '../utils/Life';
+
 import View from './View';
 import Controls from './Controls';
 
 
 class GameOfLife extends React.Component {
 	constructor(props) {
+		super(props);
+
 		this.state = {
-			life : new Life(40,20),
+			life: new Life(40,20),
 			
-			width : 40,
-			height : 20,
+			cellRows: 20,
+			cellColumns: 40,
 			
-			animating : false,
-			renderGlow : false,
+			animating: false,
+			renderGlow: false,
 			
-			intervalID : null
+			intervalID: null
 		};
 	}
 
@@ -47,10 +50,10 @@ class GameOfLife extends React.Component {
 	}
 
 
-	toggleCells(set) {
+	toggleCells(cellSet) {
 		if (!this.state.animating) {		//todo remove this check
 			
-			set.forEach(str => {
+			cellSet.forEach(str => {
 				let [r, c] = str.split(':');
 			
 				this.state.life.flipCellState(Number(r), Number(c))
@@ -93,16 +96,18 @@ class GameOfLife extends React.Component {
 				</div>
 				
 				<div id='view-controls-container'>
-					<LifeView 
-						cells={this.state.life.board} 
-						toggleCells={this.toggleCells} 
+					<View 
+						cells={this.state.life.board}
+						rows={this.state.cellRows}
+						columns={this.state.cellColumns}
+						toggleCells={this.toggleCells.bind(this)} 
 						animated={this.state.animating} 
 						glowing={this.state.renderGlow}/>
 					
-					<LifeControl 
-						toggleAnimation={this.toggleAnimation} 
-						toggleGlow={this.toggleGlow} 
-						clear={this.clear} 
+					<Controls
+						toggleAnimation={this.toggleAnimation.bind(this)} 
+						toggleGlow={this.toggleGlow.bind(this)} 
+						clear={this.clear.bind(this)} 
 						animated={this.state.animating} 
 						glowing={this.state.renderGlow}/>
 				</div>
@@ -111,7 +116,8 @@ class GameOfLife extends React.Component {
 			</div>
 		);	
 	}
-});
+}
+
 
 export default GameOfLife;
 
