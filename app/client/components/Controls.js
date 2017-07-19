@@ -30,4 +30,4 @@ const LifeControl = (props) => {
 	)
 };
 
-export default LifeControl;
+export default Controls;

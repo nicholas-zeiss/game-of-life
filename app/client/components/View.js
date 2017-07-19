@@ -8,7 +8,7 @@ state is helpers/accesory information explained in getInitialState
 
 import React from 'react';
 
-const LifeView = React.createClass({
+const View = React.createClass({
 	getInitialState() {
 		return {
 			width: 20,									//width/height of each cell, magic numbers because responsive design is hard
@@ -134,4 +134,5 @@ const LifeView = React.createClass({
 	}
 });
 
-export default LifeView;
+export default View;
+
