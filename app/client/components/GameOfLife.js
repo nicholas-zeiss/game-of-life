@@ -63,9 +63,28 @@ const GameOfLife = React.createClass({
 
 	render() {
 		return (
-			<div id='view-controls-container'>
-				<LifeView cells={this.state.life.board} toggleCells={this.toggleCells} animated={this.state.animating} glowing={this.state.renderGlow}/>
-				<LifeControl toggleAnimation={this.toggleAnimation} toggleGlow={this.toggleGlow} clear={this.clear} animated={this.state.animating} glowing={this.state.renderGlow}/>
+			<div id='app'>
+				
+				<div id='header'>
+					<h1>Conway's Game of Life</h1>
+				</div>
+				
+				<div id='view-controls-container'>
+					<LifeView 
+						cells={this.state.life.board} 
+						toggleCells={this.toggleCells} 
+						animated={this.state.animating} 
+						glowing={this.state.renderGlow}/>
+					
+					<LifeControl 
+						toggleAnimation={this.toggleAnimation} 
+						toggleGlow={this.toggleGlow} 
+						clear={this.clear} 
+						animated={this.state.animating} 
+						glowing={this.state.renderGlow}/>
+				</div>
+
+				<div className='empty'></div>
 			</div>
 		);	
 	}

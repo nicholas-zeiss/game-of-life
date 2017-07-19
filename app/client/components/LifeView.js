@@ -123,9 +123,13 @@ const LifeView = React.createClass({
 	render() {
 		return (
 			<canvas id='life-canvas'
-			height={this.state.height * this.props.cells.length}
-			width={this.state.width * this.props.cells[0].length}
-			onMouseDown={this.startSelection} onMouseMove={this.inSelection} onMouseUp={this.finishedSelection} onMouseLeave={this.finishedSelection}></canvas>
+				height={this.state.height * this.props.cells.length}
+				width={this.state.width * this.props.cells[0].length}
+				onMouseDown={this.startSelection} 
+				onMouseMove={this.inSelection} 
+				onMouseUp={this.finishedSelection} 
+				onMouseLeave={this.finishedSelection}>
+			</canvas>
 		);
 	}
 });
