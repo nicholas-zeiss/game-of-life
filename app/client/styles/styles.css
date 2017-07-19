@@ -6,6 +6,13 @@ body {
 	font-family: 'Roboto Mono', monospace;	
 	
 	background-color: white;
+
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
 }
 
 
@@ -32,9 +39,10 @@ button:active, button:focus {
 
 	#header {
 		width: 100vw;
+
+		flex: 0 0 76px;
 		
 		text-align: center;
-		
 		background-color: red;
 	}
 
@@ -48,10 +56,21 @@ button:active, button:focus {
 
 
 	#view-controls-container {
+		width: 70vw;
+
+		flex-grow: 1 1;
+		/*height: calc(100vh - 76px);*/
+
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
 		align-items: center;
 	}
+
+
+		#canvas-container {
+			width: 100%;
+		}
 
 
 		canvas {
@@ -79,8 +98,12 @@ button:active, button:focus {
 				border: 1px solid black;			  
 
 			  font-size: 18px;
-				
 				background-color: green;
 			}
+
+
+	.empty {
+		flex: 0 0 0;
+	}
 
 

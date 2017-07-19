@@ -4,6 +4,7 @@ This stateless component holds various buttons used to manipulate the game of li
 
 import React from 'react';
 
+
 const Controls = (props) => {
 	return  (
 		<div id='controls-container'>
@@ -11,11 +12,12 @@ const Controls = (props) => {
 			<button 
 				type='button' 
 				onClick={props.toggleAnimation}>
-				{props.animated ? 'Pause' : 'Start'}
+				{props.animating ? 'Pause' : 'Start'}
 			</button>
 			
 			<button 
-				type='button' 
+				type='button'
+				disabled={props.animating}
 				onClick={props.toggleGlow}>
 				{props.glowing ? 'Stop glow' : 'Start glow'}
 			</button>

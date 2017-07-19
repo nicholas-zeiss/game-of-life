@@ -17,10 +17,13 @@ class GameOfLife extends React.Component {
 		super(props);
 
 		this.state = {
-			life: new Life(40,20),
+			life: new Life(100,50),
 			
-			cellRows: 20,
-			cellColumns: 40,
+			cellRows: 50,
+			cellColumns: 100,
+
+			canvasWidth: 800,
+			canvasDiv: null,
 			
 			animating: false,
 			renderGlow: false,
@@ -29,6 +32,22 @@ class GameOfLife extends React.Component {
 		};
 	}
 
+
+	componentDidMount() {
+		
+		window.onresize = () => { 
+			this.setState({
+				canvasWidth: this.state.canvasDiv.offsetWidth
+			});
+		};
+
+		let canvasDiv = document.getElementById('canvas-container')
+
+		this.setState({
+			canvasWidth: canvasDiv.offsetWidth,
+			canvasDiv: canvasDiv
+		});
+	}
 
 	toggleAnimation() {
 		let id = null;
@@ -51,25 +70,20 @@ class GameOfLife extends React.Component {
 
 
 	toggleCells(cellSet) {
-		if (!this.state.animating) {		//todo remove this check
-			
-			cellSet.forEach(str => {
-				let [r, c] = str.split(':');
-			
-				this.state.life.flipCellState(Number(r), Number(c))
-			});
+		cellSet.forEach(str => {
+			let [r, c] = str.split(':');
+		
+			this.state.life.flipCellState(Number(r), Number(c))
+		});
 
-			this.forceUpdate();
-		}
+		this.forceUpdate();
 	}
 
 
 	toggleGlow() {
-		if(!this.state.animating) {	//todo remove this check
-			this.setState({
-				renderGlow : !this.state.renderGlow
-			});
-		}
+		this.setState({
+			renderGlow : !this.state.renderGlow
+		});
 	}
 
 
@@ -96,23 +110,26 @@ class GameOfLife extends React.Component {
 				</div>
 				
 				<div id='view-controls-container'>
-					<View 
-						cells={this.state.life.board}
-						rows={this.state.cellRows}
-						columns={this.state.cellColumns}
-						toggleCells={this.toggleCells.bind(this)} 
-						animated={this.state.animating} 
-						glowing={this.state.renderGlow}/>
-					
+					<div id='canvas-container'>
+						<View 
+							cells={this.state.life.board}
+							rows={this.state.cellRows}
+							columns={this.state.cellColumns}
+							cellSize={this.state.canvasWidth / this.state.cellColumns}
+							toggleCells={this.toggleCells.bind(this)} 
+							animating={this.state.animating} 
+							glowing={this.state.renderGlow}/>
+					</div>
 					<Controls
 						toggleAnimation={this.toggleAnimation.bind(this)} 
 						toggleGlow={this.toggleGlow.bind(this)} 
 						clear={this.clear.bind(this)} 
-						animated={this.state.animating} 
+						animating={this.state.animating} 
 						glowing={this.state.renderGlow}/>
 				</div>
 
-				<div className='empty'></div>
+				<div className='empty'>
+				</div>
 			</div>
 		);	
 	}

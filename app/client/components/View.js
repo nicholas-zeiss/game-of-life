@@ -13,8 +13,6 @@ class View extends React.Component {
 		super(props);
 
 		this.state = {
-			cellSize: 20,
-
 			container: null,
 
 			//used to track cells selected by mouse events
@@ -48,7 +46,7 @@ class View extends React.Component {
 		let ctx = this.state.container;
 
 		ctx.fillStyle = COLORS.cellBorder;
-		ctx.fillRect(0, 0, this.state.cellSize * this.props.columns, this.state.cellSize * this.props.rows);
+		ctx.fillRect(0, 0, this.props.cellSize * this.props.columns, this.props.cellSize * this.props.rows);
 
 
 		for (let i = 0; i < this.props.rows; i++) {
@@ -91,7 +89,7 @@ class View extends React.Component {
 		ctx.fillStyle = alive ? COLORS.liveCell : COLORS.deadCell;
 
 		//the +/- 1 modification preserves the borders between cells
-		ctx.fillRect(c * this.state.cellSize + 1, r * this.state.cellSize + 1, this.state.cellSize - 1, this.state.cellSize - 1);
+		ctx.fillRect(c * this.props.cellSize + 1, r * this.props.cellSize + 1, this.props.cellSize - 1, this.props.cellSize - 1);
 	}
 
 
@@ -99,7 +97,7 @@ class View extends React.Component {
 		let ctx = this.state.container;
 
 		//center of current cell
-		let x = (c + .5) * this.state.cellSize, y = (r + .5) * this.state.cellSize;
+		let x = (c + .5) * this.props.cellSize, y = (r + .5) * this.props.cellSize;
 		
 		let gradient = ctx.createRadialGradient(x, y, 120, x, y, 0);						
 																																						 
@@ -113,12 +111,12 @@ class View extends React.Component {
 
 
 	startSelection(e) {
-		if (!this.props.animated) {
+		if (!this.props.animating) {
 			this.state.mouseDownMouseUp[0] = true;
 			
 			//e.nativeEvent.offsetX / offsetY are the mouse coordinates relative to the canvas element
-			let r = Math.floor(e.nativeEvent.offsetY / this.state.cellSize);
-			let c = Math.floor(e.nativeEvent.offsetX / this.state.cellSize);
+			let r = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
+			let c = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
 
 			this.toggleCell(r, c);																																																																
 			
@@ -130,8 +128,8 @@ class View extends React.Component {
 	inSelection(e) {
 	  if (this.state.mouseDownMouseUp[0] && !this.state.mouseDownMouseUp[1]) {
 
-			let r = Math.floor(e.nativeEvent.offsetY / this.state.cellSize);
-			let c = Math.floor(e.nativeEvent.offsetX / this.state.cellSize);
+			let r = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
+			let c = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
 	  	
 	  	let validCell = 0 <= r && r <= this.props.rows - 1
 								  		&& 0 <= c && c <= this.props.columns - 1
@@ -156,8 +154,8 @@ class View extends React.Component {
 		return (
 			<canvas
 				id='life-canvas'
-				height={this.state.cellSize * this.props.cells.length}
-				width={this.state.cellSize * this.props.cells[0].length}
+				height={this.props.cellSize * this.props.rows}
+				width={this.props.cellSize * this.props.columns}
 				onMouseDown={this.startSelection.bind(this)} 
 				onMouseMove={this.inSelection.bind(this)} 
 				onMouseUp={this.finishedSelection.bind(this)} 
