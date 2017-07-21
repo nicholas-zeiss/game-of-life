@@ -15,13 +15,6 @@ const Controls = (props) => {
 				{props.animating ? 'Pause' : 'Start'}
 			</button>
 			
-			<button 
-				type='button'
-				disabled={props.animating}
-				onClick={props.toggleGlow}>
-				{props.glowing ? 'Stop glow' : 'Start glow'}
-			</button>
-			
 			<button
 				type='button'
 			  onClick={props.clear}>

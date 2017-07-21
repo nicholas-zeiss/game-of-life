@@ -7,7 +7,7 @@ const COLORS = {
 	liveCell: '#43d300',
 	
 	gradientStart: 'rgba(67, 211, 0, 0)',
-	gradientStop: 'rgba(67, 211, 0, .05)'
+	gradientStop: 'rgba(67, 211, 0, .1)'
 }
 
 export default COLORS;

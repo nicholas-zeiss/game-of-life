@@ -6,6 +6,7 @@ Controls, which render the game and handle user input respectively.
 
 import React from 'react';
 
+import COLORS from '../utils/colors';
 import Life from '../utils/Life';
 
 import View from './View';
@@ -17,17 +18,15 @@ class GameOfLife extends React.Component {
 		super(props);
 
 		this.state = {
-			life: new Life(100,50),
+			life: new Life(70, 35),
 			
-			cellRows: 50,
-			cellColumns: 100,
+			cellRows: 35,
+			cellColumns: 70,
 
 			canvasWidth: 800,
-			canvasDiv: null,
+			canvas: null,
 			
-			animating: false,
-			renderGlow: false,
-			
+			animating: false,			
 			intervalID: null
 		};
 	}
@@ -37,17 +36,36 @@ class GameOfLife extends React.Component {
 		
 		window.onresize = () => { 
 			this.setState({
-				canvasWidth: this.state.canvasDiv.offsetWidth
+				canvasWidth: this.state.canvas.offsetWidth
 			});
 		};
 
-		let canvasDiv = document.getElementById('canvas-container')
+		let canvas = document.getElementById('life-canvas');
 
 		this.setState({
-			canvasWidth: canvasDiv.offsetWidth,
-			canvasDiv: canvasDiv
+			canvasWidth: canvas.offsetWidth,
+			canvas: canvas
 		});
 	}
+
+
+	//creating the glow gradient for each cell in view itself is very computationally intensive
+	//so instead we create a separate hidden canvas with the glow effect and place it each cell in view
+	componentDidUpdate() {
+		let glow = document.getElementById('glow-canvas').getContext('2d');
+		let cellSize = this.state.canvasWidth / this.state.cellColumns;
+		let gradient = glow.createRadialGradient(4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 0);						
+																																						 
+		gradient.addColorStop(0, COLORS.gradientStart);									
+		gradient.addColorStop(1, COLORS.gradientStop);
+		
+		glow.clearRect(0, 0, 8 * cellSize, 8 * cellSize)
+		
+		glow.fillStyle = gradient;
+
+		glow.fillRect(0, 0, 8 * cellSize, 8 * cellSize);
+	}
+
 
 	toggleAnimation() {
 		let id = null;
@@ -59,7 +77,7 @@ class GameOfLife extends React.Component {
     	id = setInterval(() => {
     		this.state.life.updateBoard();
     		this.forceUpdate();
-    	}, 150);   	
+    	}, 250);   	
     }
 
   	this.setState({
@@ -80,11 +98,11 @@ class GameOfLife extends React.Component {
 	}
 
 
-	toggleGlow() {
-		this.setState({
-			renderGlow : !this.state.renderGlow
-		});
-	}
+	// toggleGlow() {
+	// 	this.setState({
+	// 		renderGlow : !this.state.renderGlow
+	// 	});
+	// }
 
 
 	clear() {
@@ -103,32 +121,31 @@ class GameOfLife extends React.Component {
 
 	render() {
 		return (
-			<div id='app'>
-				
+			<div id='app'>			
 				<div id='header'>
 					<h1>Conway's Game of Life</h1>
 				</div>
 				
 				<div id='view-controls-container'>
-					<div id='canvas-container'>
-						<View 
-							cells={this.state.life.board}
-							rows={this.state.cellRows}
-							columns={this.state.cellColumns}
-							cellSize={this.state.canvasWidth / this.state.cellColumns}
-							toggleCells={this.toggleCells.bind(this)} 
-							animating={this.state.animating} 
-							glowing={this.state.renderGlow}/>
-					</div>
+					<View 
+						cells={this.state.life.board}
+						rows={this.state.cellRows}
+						columns={this.state.cellColumns}
+						cellSize={this.state.canvasWidth / this.state.cellColumns}
+						toggleCells={this.toggleCells.bind(this)} 
+						animating={this.state.animating}/> 
 					<Controls
 						toggleAnimation={this.toggleAnimation.bind(this)} 
-						toggleGlow={this.toggleGlow.bind(this)} 
 						clear={this.clear.bind(this)} 
-						animating={this.state.animating} 
-						glowing={this.state.renderGlow}/>
+						animating={this.state.animating}/>
 				</div>
-
+					
 				<div className='empty'>
+					<canvas
+						id='glow-canvas'
+						height={8 * this.state.canvasWidth / this.state.cellColumns}
+						width={8 * this.state.canvasWidth / this.state.cellColumns}>
+					</canvas>
 				</div>
 			</div>
 		);	

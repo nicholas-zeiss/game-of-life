@@ -1,18 +1,22 @@
 /**
-This class implements Conway's game of life
+This class implements Conway's game of life. It holds the state of all the cells in a 2d array and updates them
+when called to do so. It wraps around its borders, ie a cell on the left edge can count cells on the right edge
+as neighbors.
 **/
 
+
 class Life {
-	//initializes a board of specified width and height with all 0s
 	constructor(width, height) {
 		this.width = width;
 		this.height = height;
 		this.board = new Array(height).fill(1).map(el => new Array(width).fill(0));
 	}
 
+
 	flipCellState(row, col) {
 		this.board[row][col] = this.board[row][col] ? 0 : 1;
 	}
+
 
 	updateBoard() {
 		let newBoard = new Array(this.height).fill(1).map(el => new Array(this.width).fill(0));
@@ -32,19 +36,23 @@ class Life {
 		this.board = newBoard;
 	}
 
+
 	countLiveNeighbors(row, col) {
 		let count = 0;
 
 		for (let r = -1; r < 2; r++) {
 			for (let c = - 1; c < 2; c++) {
+				
 				if (r == 0 && c == 0) continue;
 				
-				let wrapRow = (row + r) == -1 ? this.height - 1 : 			//here we allow the board to wrap around the edges
-											(row + r) == this.height ? 0 :
+				//here we allow the board to wrap around the edges
+				let wrapRow = (row + r) == -1          ? this.height - 1 :
+											(row + r) == this.height ? 0               :
 											row + r;
 				
-				let wrapCol = (col + c) == -1 ? this.width - 1 :
-											(col + c) == this.width ? 0 :
+
+				let wrapCol = (col + c) == -1         ? this.width - 1 :
+											(col + c) == this.width ? 0              :
 											col + c;
 
 				this.board[wrapRow][wrapCol] ? count++ : null;
@@ -54,13 +62,17 @@ class Life {
 		return count;
 	}
 
+
 	print() {
 		this.board.forEach(row => console.log(row, '\n'));
 	}
+
 
 	clear() {
 		this.board = new Array(this.height).fill(1).map(el => new Array(this.width).fill(0));
 	}
 }
 
+
 export default Life;
+

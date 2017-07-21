@@ -3,6 +3,10 @@ This component renders our game of life to the DOM using a canvas element and al
 the mouse across multiple cells. If a cell is touched more than once during a drag it is only toggled one time.
 **/
 
+
+//TODO separate canvases stacked on top of each other for border/dead pixel background, live pixels, glow
+
+
 import React from 'react';
 
 import COLORS from '../utils/colors';
@@ -51,33 +55,31 @@ class View extends React.Component {
 
 		for (let i = 0; i < this.props.rows; i++) {
 			for (let j = 0; j < this.props.columns; j++) {
-				this.drawCell(i, j, !!this.props.cells[i][j]);
+				this.drawCell(i, j, this.props.cells[i][j]);
 			}
 		}
 
-		//now that the borders and cells are drawn, render glow if glow is enabled
-		if (this.props.glowing) {
-			
-			for (let i = 0; i < this.props.rows; i++) {
-				for (let j = 0; j < this.props.columns; j++) {
-					
-					if (!!this.props.cells[i][j]) {
-						this.renderGlow(i, j);
-					}
+		//now that the borders and dead cells are drawn, glow is drawn over them
+		for (let i = 0; i < this.props.rows; i++) {
+			for (let j = 0; j < this.props.columns; j++) {
+				
+				if (this.props.cells[i][j]) {
+					this.renderGlow(i, j);
 				}
 			}
 		}
+		
 	}
 
 
 	/**
 	We use this to toggle cells in the canvas when we are in the middle of a drag selection so we don't have to wait
-	for the selection to end to display the changes. Does not remove glow.
+	for the selection to end to display the changes. Does not remove glow from a newly dead cell.
 	**/
 	toggleCell(r,c) {
 		this.drawCell(r, c, !this.props.cells[r][c])
 		
-		if (this.props.glowing && !this.props.cells[r][c]) {
+		if (!this.props.cells[r][c]) {
 			this.renderGlow(r, c);
 		}
 	}
@@ -94,40 +96,16 @@ class View extends React.Component {
 
 
 	renderGlow(r, c) {
-		let ctx = this.state.container;
-
-		//center of current cell
+		let glow = document.getElementById('glow-canvas');
+		
 		let x = (c + .5) * this.props.cellSize, y = (r + .5) * this.props.cellSize;
-		
-		let gradient = ctx.createRadialGradient(x, y, 120, x, y, 0);						
-																																						 
-		gradient.addColorStop(0, COLORS.gradientStart);									
-		gradient.addColorStop(1, COLORS.gradientStop);
-		
-		ctx.fillStyle = gradient;
 
-		ctx.fillRect(x - 120, y - 120, x + 120, y + 120);					
+		this.state.container.drawImage(glow, x - this.props.cellSize * 4, y - this.props.cellSize * 4);
 	}
 
 
-	startSelection(e) {
-		if (!this.props.animating) {
-			this.state.mouseDownMouseUp[0] = true;
-			
-			//e.nativeEvent.offsetX / offsetY are the mouse coordinates relative to the canvas element
-			let r = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
-			let c = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
-
-			this.toggleCell(r, c);																																																																
-			
-			this.state.selectedCells.add(r + ':' + c);																		
-		}
-	}
-
-
-	inSelection(e) {
-	  if (this.state.mouseDownMouseUp[0] && !this.state.mouseDownMouseUp[1]) {
-
+	mouseSelect(isClick, e) {
+		if (isClick || e.buttons == 1) {
 			let r = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
 			let c = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
 	  	
@@ -139,14 +117,12 @@ class View extends React.Component {
 	  		this.toggleCell(r, c);
 	    	this.state.selectedCells.add(r + ':' + c);	
 	    }
-	  }
-	}
+		}
 
-
-	finishedSelection(e) {
-    if (this.state.mouseDownMouseUp[0]) {
-    	this.props.toggleCells(this.state.selectedCells);
-    }
+		//second case occurs at the end of a drag selection
+		if (isClick || (e.buttons == 0 && this.state.selectedCells.size > 0)) {
+			this.props.toggleCells(this.state.selectedCells);
+		}
 	}
 
 
@@ -156,10 +132,8 @@ class View extends React.Component {
 				id='life-canvas'
 				height={this.props.cellSize * this.props.rows}
 				width={this.props.cellSize * this.props.columns}
-				onMouseDown={this.startSelection.bind(this)} 
-				onMouseMove={this.inSelection.bind(this)} 
-				onMouseUp={this.finishedSelection.bind(this)} 
-				onMouseLeave={this.finishedSelection.bind(this)}>
+				onClick={this.mouseSelect.bind(this, true)}
+				onMouseMove={this.mouseSelect.bind(this, false)}> 
 			</canvas>
 		);
 	}
