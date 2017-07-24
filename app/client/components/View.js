@@ -28,7 +28,6 @@ class View extends React.Component {
 
 
 	componentDidMount() {
-		console.log(this.props.cellSize);
 		this.setState({
 			container: document.getElementById('life-canvas').getContext('2d')
 		});
@@ -45,6 +44,7 @@ class View extends React.Component {
 	componentDidUpdate() {
 		let glow = document.getElementById('glow-canvas').getContext('2d');
 		let cellSize = this.props.cellSize;
+		
 		let gradient = glow.createRadialGradient(4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 0);																																				 
 		gradient.addColorStop(0, COLORS.gradientStart);									
 		gradient.addColorStop(1, COLORS.gradientStop);
@@ -52,7 +52,7 @@ class View extends React.Component {
 		glow.clearRect(0, 0, 8 * cellSize, 8 * cellSize)
 		glow.fillStyle = gradient;
 		glow.fillRect(0, 0, 8 * cellSize, 8 * cellSize);
-		console.log(this.props.cellSize);
+
 		this.drawCellBoard();
 	}
 

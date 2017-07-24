@@ -14,6 +14,15 @@ const Controls = (props) => {
 				onClick={props.toggleAnimation}>
 				{props.animating ? 'Pause' : 'Start'}
 			</button>
+
+			<select 
+				id='speed-select' 
+				onChange={props.changeSpeed}
+				value={props.speed}>
+				<option value='slow'>Slow</option>
+				<option value='medium'>Medium</option>
+				<option value='fast'>Fast</option>
+			</select>
 			
 			<button
 				type='button'

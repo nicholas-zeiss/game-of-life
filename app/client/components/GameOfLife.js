@@ -15,6 +15,13 @@ import View from './View';
 import Selector from './Selector';
 
 
+const DELAYS = {
+	slow: 500,
+	medium: 150,
+	fast: 50
+}
+
+
 class GameOfLife extends React.Component {
 	constructor(props) {
 		super(props);
@@ -30,7 +37,7 @@ class GameOfLife extends React.Component {
 			
 			animating: false,			
 			intervalID: null,
-			delay: 50,
+			delay: 'medium',
 
 			selectedPreset: null
 		};
@@ -40,7 +47,6 @@ class GameOfLife extends React.Component {
 	componentDidMount() {
 		//so that View component gets updated cellSize prop
 		window.onresize = () => {
-			console.log('resize')
 			this.setState({
 				canvasWidth: document.getElementById('life-canvas').offsetWidth
 			});
@@ -52,24 +58,6 @@ class GameOfLife extends React.Component {
 			canvas: canvas,
 			canvasWidth: canvas.offsetWidth
 		});
-	}
-
-
-	//creating the glow gradient for each cell in view itself is very computationally intensive
-	//so instead we create a separate hidden canvas with the glow effect and place it each cell in view
-	
-	//TODO put this in selector so it doesn't rerender every update
-	componentDidUpdate() {
-		// let glow = document.getElementById('glow-canvas').getContext('2d');
-		// let cellSize = this.state.canvasWidth / this.state.cellColumns;
-		// console.log(cellSize);
-		// let gradient = glow.createRadialGradient(4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 0);																																				 
-		// gradient.addColorStop(0, COLORS.gradientStart);									
-		// gradient.addColorStop(1, COLORS.gradientStop);
-		
-		// glow.clearRect(0, 0, 8 * cellSize, 8 * cellSize)
-		// glow.fillStyle = gradient;
-		// glow.fillRect(0, 0, 8 * cellSize, 8 * cellSize);
 	}
 
 
@@ -87,7 +75,7 @@ class GameOfLife extends React.Component {
     		}
 
     		this.forceUpdate();
-    	}, this.state.delay);   	
+    	}, DELAYS[this.state.delay]);   	
     }
 
   	this.setState({
@@ -138,10 +126,33 @@ class GameOfLife extends React.Component {
 	}
 
 
-	render() {
-		//on initial render this.state.canvas is null but subcomponents still expect canvasWidth
-		// let canvasWidth = this.state.canvas ? this.state.canvas.offsetWidth : 10;
+	changeSpeed(e) {
+		if (!this.state.animating) {
+			this.setState({
+				delay: e.target.value
+			});
+		
+		} else {
+			clearInterval(this.state.intervalID);
+			
+			let id = setInterval(() => {
+    		if (!this.state.life.updateBoard()) {
+    			this.toggleAnimation();
+    		}
 
+	    	this.forceUpdate();
+
+	    }, DELAYS[e.target.value]);
+		  
+	  	this.setState({
+	  		delay: e.target.value,
+	  		intervalID : id
+	  	});
+    }
+	}
+
+
+	render() {
 		return (
 			<div id='app'>			
 				<div id='header'>
@@ -161,7 +172,9 @@ class GameOfLife extends React.Component {
 					<Controls
 						toggleAnimation={this.toggleAnimation.bind(this)} 
 						clear={this.clear.bind(this)} 
-						animating={this.state.animating}/>
+						animating={this.state.animating}
+						speed={this.state.delay}
+						changeSpeed={this.changeSpeed.bind(this)}/>
 				</div>
 				
 				<Selector
