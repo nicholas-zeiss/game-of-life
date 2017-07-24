@@ -10,6 +10,7 @@ class Life {
 		this.width = width;
 		this.height = height;
 		this.board = new Array(height).fill(1).map(el => new Array(width).fill(0));
+		this.generation = 0;
 	}
 
 
@@ -20,20 +21,34 @@ class Life {
 
 	updateBoard() {
 		let newBoard = new Array(this.height).fill(1).map(el => new Array(this.width).fill(0));
+		let anyAlive = false;
 
 		for (let r = 0; r < this.height; r++) {
 			for (let c = 0; c < this.width; c++) {
 
 				let count = this.countLiveNeighbors(r, c);
 
-				if (count < 2) newBoard[r][c] = 0;
-				else if (count == 2) newBoard[r][c] = this.board[r][c];
-				else if (count == 3) newBoard[r][c] = 1;
-				else newBoard[r][c] = 0;
+				if (count < 2) {
+					newBoard[r][c] = 0;
+
+				} else if (count == 2) {
+					newBoard[r][c] = this.board[r][c];
+					anyAlive = !!newBoard[r][c] || anyAlive;
+
+				} else if (count == 3) {
+				  newBoard[r][c] = 1;
+					anyAlive = true;
+
+				} else {
+					newBoard[r][c] = 0;
+				}
 			}
 		}
 
+		this.generation++;
 		this.board = newBoard;
+
+		return anyAlive;
 	}
 
 
@@ -70,6 +85,7 @@ class Life {
 
 	clear() {
 		this.board = new Array(this.height).fill(1).map(el => new Array(this.width).fill(0));
+		this.generation = 0;
 	}
 }
 

@@ -19,14 +19,16 @@ class View extends React.Component {
 		this.state = {
 			container: null,
 
-			//used to track cells selected by mouse events
-			selectedCells: new Set(),													//selected cells held here in format 'r:c'
-			mouseDownMouseUp: [false, false]
+			//cell the mouse is over
+			mouseCell: null,
+
+			selectedCells: new Set()													//selected cells held here in format 'r:c'
 		};
 	}
 
 
 	componentDidMount() {
+		console.log(this.props.cellSize);
 		this.setState({
 			container: document.getElementById('life-canvas').getContext('2d')
 		});
@@ -35,13 +37,22 @@ class View extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			selectedCells: new Set(),
-			mouseDownMouseUp: [false, false]
+			selectedCells: new Set()
 		});
 	}																																				
 
 
 	componentDidUpdate() {
+		let glow = document.getElementById('glow-canvas').getContext('2d');
+		let cellSize = this.props.cellSize;
+		let gradient = glow.createRadialGradient(4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 0);																																				 
+		gradient.addColorStop(0, COLORS.gradientStart);									
+		gradient.addColorStop(1, COLORS.gradientStop);
+		
+		glow.clearRect(0, 0, 8 * cellSize, 8 * cellSize)
+		glow.fillStyle = gradient;
+		glow.fillRect(0, 0, 8 * cellSize, 8 * cellSize);
+		console.log(this.props.cellSize);
 		this.drawCellBoard();
 	}
 
@@ -68,13 +79,26 @@ class View extends React.Component {
 				}
 			}
 		}
+
+		if (this.props.preset && this.state.mouseCell) {
+			this.props.preset.forEach(([r, c]) => {
+				// console.log(mouseCell[0] + r, mouseCell[1] + c)
+				let row = this.state.mouseCell[0] + r;
+				let col = this.state.mouseCell[1] + c;
+
+				if (this.validCell(row, col) && !this.props.cells[row][col]) {
+					this.drawCell(row, col, true);
+					this.renderGlow(row, this.state.mouseCell[1] + c);
+				}
+			});
+		}
 		
 	}
 
 
 	/**
 	We use this to toggle cells in the canvas when we are in the middle of a drag selection so we don't have to wait
-	for the selection to end to display the changes. Does not remove glow from a newly dead cell.
+	for the cells to be toggled in the Life model held by the parent component. Does not remove glow from a newly dead cell.
 	**/
 	toggleCell(r,c) {
 		this.drawCell(r, c, !this.props.cells[r][c])
@@ -104,14 +128,37 @@ class View extends React.Component {
 	}
 
 
+	handleMouse(isClick, e) {
+		if (this.props.preset) {
+			let row = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
+			let col = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
+
+			if (isClick) {
+				//call this.props.toggleCells on the cells in preset not already alive
+				let toToggle = [];
+
+				this.props.preset.forEach(([r, c]) => {
+					if (this.validCell(row + r, col + c) && !this.props.cells[row + r][col + c]) {
+						toToggle.push(`${row + r}:${col + c}`);
+					}
+				});
+
+				this.setState({mouseCell: null}, this.props.toggleCells.bind(null, toToggle, true));
+			} else {
+				this.setState({mouseCell: [row, col]});
+			}
+		} else {
+			this.mouseSelect(isClick, e);
+		}
+	}
+
+
 	mouseSelect(isClick, e) {
 		if (isClick || e.buttons == 1) {
 			let r = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
 			let c = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
 	  	
-	  	let validCell = 0 <= r && r <= this.props.rows - 1
-								  		&& 0 <= c && c <= this.props.columns - 1
-								  		&& !this.state.selectedCells.has(r+':'+c);
+	  	let validCell = this.validCell(r, c) && !this.state.selectedCells.has(r+':'+c);
 
 	  	if (validCell) {
 	  		this.toggleCell(r, c);
@@ -119,22 +166,34 @@ class View extends React.Component {
 	    }
 		}
 
-		//second case occurs at the end of a drag selection
+		//second case occurs at click or the end of a drag selection
 		if (isClick || (e.buttons == 0 && this.state.selectedCells.size > 0)) {
 			this.props.toggleCells(this.state.selectedCells);
 		}
 	}
 
 
+	validCell(r, c) {
+		return 0 <= r && r <= this.props.rows - 1 && 0 <= c && c <= this.props.columns - 1;
+	}
+
+
 	render() {
 		return (
-			<canvas
-				id='life-canvas'
-				height={this.props.cellSize * this.props.rows}
-				width={this.props.cellSize * this.props.columns}
-				onClick={this.mouseSelect.bind(this, true)}
-				onMouseMove={this.mouseSelect.bind(this, false)}> 
-			</canvas>
+			<div id='view-container'>
+				<canvas
+					id='glow-canvas'
+					height={8 * this.props.cellSize}
+					width={8 * this.props.cellSize}>
+				</canvas>
+				<canvas
+					id='life-canvas'
+					height={this.props.cellSize * this.props.rows}
+					width={this.props.cellSize * this.props.columns}
+					onClick={this.handleMouse.bind(this, true)}
+					onMouseMove={this.handleMouse.bind(this, false)}> 
+				</canvas>
+			</div>
 		);
 	}
 }
