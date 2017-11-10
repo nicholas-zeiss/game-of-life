@@ -1,4 +1,7 @@
-var path = require('path');
+
+
+const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
 	entry: './app/client/App.js',
@@ -8,9 +11,14 @@ module.exports = {
 	},
 	module: {
 		loaders: [{
-	      test: /\.js$/,
-	      loaders: ['babel?presets[]=es2015&presets[]=react'],
-	      include: path.join(__dirname, 'app/client')
-	  }]
-	}
+			test: /\.js$/,
+			loaders: ['babel?presets[]=es2015&presets[]=react'],
+			include: path.join(__dirname, 'app/client')
+		}]
+	},
+	plugins: [
+		new webpack.DefinePlugin({
+			'process.env': { 'NODE_ENV': JSON.stringify('production') }
+		})
+	]
 };

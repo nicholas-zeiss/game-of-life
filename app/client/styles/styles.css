@@ -4,6 +4,7 @@ body {
 	margin: 0;
 	
 	font-family: 'Roboto Mono', monospace;	
+	font-weight: 500;
 	
 	background-color: white;
 
@@ -18,6 +19,7 @@ body {
 
 button {
 	font-family: 'Roboto Mono', monospace;
+	font-weight: 500;
 	
 	cursor: pointer;
 }
@@ -60,23 +62,48 @@ button:active, button:focus {
 
 	#view-controls-container {
 		width: 70vw;
-		flex-grow: 1 1;
+		min-width: 550px;
+
+		flex-basis: -webkit-min-content;
+  	flex-basis: -moz-min-content;
+  	flex-basis: min-content;
 
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+
+		padding: 10px 20px 20px;
+		border: 1px solid black;
+		border-radius: 3px;
+		box-sizing: content-box;
+
+		background-color: red;
 	}
 
 
+		#view-controls-container > div:first-child {
+			align-self: flex-start;
+
+			margin-left: 2.5%;
+
+			font-size: 22px;
+			font-weight: 700;
+		}
+
+
 		#view-container {
-			width: 100%;
+			width: 95%;
+
+			margin-top: 10px;
 		}
 
 
 			#life-canvas {
-				width: 100%;			
-				
-				outline: 4px solid orange;
+				width: 100%;	
+
+				border: 2px solid blue;
+				border-radius: 2px;
+				box-sizing: content-box;
 			}
 
 
@@ -86,12 +113,12 @@ button:active, button:focus {
 
 
 		#controls-container {
-			width: 50%;
+			width: 80%;
 
 			padding: 10px;
 			
 			display: flex;
-			justify-content: space-around;
+			justify-content: space-between;
 			align-items: center;
 			
 			background-color: cyan;
@@ -102,12 +129,50 @@ button:active, button:focus {
 				height: 40px;
 				
 				padding: 5px 10px;
-				border: 1px solid black;			  
+				border: 1px solid black;
+				border-radius: 3px;			  
 
 			  font-size: 18px;
 				
 				background-color: green;
 			}
+
+			#controls-container > button:first-child {
+				width: 74px;
+			}
+
+
+			#speed {
+				height: 40px;
+
+				display: flex;	
+			}
+
+
+				#speed > * {
+					border: 1px solid black;
+					box-sizing: border-box;
+
+					background-color: green;
+				}
+
+
+				#speed > button {					
+					padding: 5px 10px;
+
+				  font-size: 22px;
+				  font-weight: 700;
+				}
+
+
+				#speed > div {
+					width: 90px;
+
+					padding: 6px 10px 4px 10px;
+
+					font-size: 18px;
+					text-align: center;
+				}
 
 
 	#selector-container {
@@ -126,17 +191,30 @@ button:active, button:focus {
 
 
 		#selector {
-			padding: 10px;
+			padding: 10px 10px 20px;
+			
 			border: 1px solid black;
+			border-left: none;
+			border-radius: 0 3px 3px 0;
+
+			box-shadow: 0 0 20px 1px black;
 			
 			background-color: cyan;
 		}
 
 
+			#selector-title {
+				text-align: center;
+				
+				font-weight: 700;
+				font-size: 25px;
+			}
+
+
 			#selector-content {
 				height: 60vh;
 
-				margin-top: 20px;
+				margin-top: 15px;
 
 				display: flex;
 				flex-direction: column;
@@ -150,20 +228,40 @@ button:active, button:focus {
 			}
 
 
-				#selector-content div {
-					margin: 10px;				
+				.selector-category {
+					margin: 10px 15px;				
 				}
 
 
-				.selector-canvas {
-					margin: 10px 10px 20px 10px;
-					
-					cursor: pointer;
-				}
+					.selector-category-label {
+						margin-bottom: 10px;
+
+						text-decoration: underline;
+						font-size: 20px;
+
+						color: orange;
+					}
+
+
+					.selector-shape-label {
+						margin-left: 10px;
+					}
+
+
+					.selector-canvas {
+						margin: 20px;
+						
+						cursor: pointer;
+					}
 
 
 			#selector-toggle {
+				z-index: 2;
+
+				margin-left: -1px;
 				border: 1px solid black;
+				border-left: 1px solid cyan;
+				border-radius: 0 3px 3px 0;
 
 				font-size: 35px;
 				

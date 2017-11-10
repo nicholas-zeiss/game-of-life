@@ -12,19 +12,27 @@ const Controls = (props) => {
 			<button 
 				type='button' 
 				onClick={props.toggleAnimation}>
-				{props.animating ? 'Pause' : 'Start'}
+				{props.animating ? 'Pause' : 'Play'}
 			</button>
 
-			<select 
-				id='speed-select' 
-				onChange={props.changeSpeed}
-				value={props.speed}>
-				<option value='slow'>Slow</option>
-				<option value='medium'>Medium</option>
-				<option value='fast'>Fast</option>
-			</select>
+			<div id='speed'>
+				<button
+					type='button'
+					disabled={props.speed === 0}
+					onClick={props.changeSpeed.bind(null, -1)}>
+					-
+				</button>
+				<div>{['Slow', 'Medium', 'Fast'][props.speed]}</div>
+				<button
+					type='button'
+					disabled={props.speed === 2}
+					onClick={props.changeSpeed.bind(null, 1)}>
+					+
+				</button>
+			</div>
 			
 			<button
+				id='clear'
 				type='button'
 			  onClick={props.clear}>
 			  Clear Board

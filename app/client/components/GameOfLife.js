@@ -15,11 +15,11 @@ import View from './View';
 import Selector from './Selector';
 
 
-const DELAYS = {
-	slow: 500,
-	medium: 150,
-	fast: 50
-}
+const SPEEDS = [
+	300,
+	150,
+	50
+];
 
 
 class GameOfLife extends React.Component {
@@ -27,17 +27,17 @@ class GameOfLife extends React.Component {
 		super(props);
 
 		this.state = {
-			life: new Life(70, 35),
+			life: new Life(80, 35),
 			
 			cellRows: 35,
-			cellColumns: 70,
+			cellColumns: 80,
 
 			canvas: null,
 			canvasWidth: 800,
 			
 			animating: false,			
 			intervalID: null,
-			delay: 'medium',
+			speed: 1,
 
 			selectedPreset: null
 		};
@@ -75,7 +75,7 @@ class GameOfLife extends React.Component {
     		}
 
     		this.forceUpdate();
-    	}, DELAYS[this.state.delay]);   	
+    	}, SPEEDS[this.state.speed]);   	
     }
 
   	this.setState({
@@ -126,10 +126,10 @@ class GameOfLife extends React.Component {
 	}
 
 
-	changeSpeed(e) {
+	changeSpeed(inc) {
 		if (!this.state.animating) {
 			this.setState({
-				delay: e.target.value
+				speed: this.state.speed + inc
 			});
 		
 		} else {
@@ -142,10 +142,10 @@ class GameOfLife extends React.Component {
 
 	    	this.forceUpdate();
 
-	    }, DELAYS[e.target.value]);
+	    }, SPEEDS[this.state.speed + inc]);
 		  
 	  	this.setState({
-	  		delay: e.target.value,
+	  		speed: this.state.speed + inc,
 	  		intervalID : id
 	  	});
     }
@@ -160,7 +160,7 @@ class GameOfLife extends React.Component {
 				</div>
 				
 				<div id='view-controls-container'>
-					{`Generation: ${this.state.life.generation}`}
+					<div>{`Generation: ${this.state.life.generation}`}</div>
 					<View 
 						cells={this.state.life.board}
 						rows={this.state.cellRows}
@@ -173,7 +173,7 @@ class GameOfLife extends React.Component {
 						toggleAnimation={this.toggleAnimation.bind(this)} 
 						clear={this.clear.bind(this)} 
 						animating={this.state.animating}
-						speed={this.state.delay}
+						speed={this.state.speed}
 						changeSpeed={this.changeSpeed.bind(this)}/>
 				</div>
 				

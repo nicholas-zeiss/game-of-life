@@ -70,7 +70,7 @@ class View extends React.Component {
 			}
 		}
 
-		//now that the borders and dead cells are drawn, glow is drawn over them
+		//now that the borders and cells are drawn, glow is drawn over them
 		for (let i = 0; i < this.props.rows; i++) {
 			for (let j = 0; j < this.props.columns; j++) {
 				
@@ -80,9 +80,10 @@ class View extends React.Component {
 			}
 		}
 
+		//if the user is placing a preset shape on the board it is drawn as well
 		if (this.props.preset && this.state.mouseCell) {
 			this.props.preset.forEach(([r, c]) => {
-				// console.log(mouseCell[0] + r, mouseCell[1] + c)
+
 				let row = this.state.mouseCell[0] + r;
 				let col = this.state.mouseCell[1] + c;
 
@@ -154,7 +155,9 @@ class View extends React.Component {
 
 
 	mouseSelect(isClick, e) {
-		if (isClick || e.buttons == 1) {
+		const button = e.buttons ? e.buttons : e.nativeEvent.which ? e.nativeEvent.which : 0;
+		console.log(e.nativeEvent)
+		if (isClick || button == 1) {
 			let r = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
 			let c = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
 	  	
@@ -167,7 +170,7 @@ class View extends React.Component {
 		}
 
 		//second case occurs at click or the end of a drag selection
-		if (isClick || (e.buttons == 0 && this.state.selectedCells.size > 0)) {
+		if (isClick || (button == 0 && this.state.selectedCells.size > 0)) {
 			this.props.toggleCells(this.state.selectedCells);
 		}
 	}

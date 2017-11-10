@@ -110,7 +110,7 @@ class Selector extends React.Component {
 		return (
 			<div id='selector-container'>
 				<div id='selector'>
-					Common Patterns
+					<div id='selector-title'>Useful Patterns</div>
 					<div id='selector-content'>
 						{content}
 					</div>
