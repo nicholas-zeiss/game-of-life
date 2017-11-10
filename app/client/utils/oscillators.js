@@ -1,6 +1,10 @@
+/**
+ *
+ *	Some well known oscillators
+ *
+**/
 
-
-const OSCILLATORS = {
+export default {
 	Beacon: {
 		cells: [
 			[0, 0], [0, 1],
@@ -68,7 +72,4 @@ const OSCILLATORS = {
 		height: 2
 	}
 };
-
-
-export default OSCILLATORS;
 

@@ -1,6 +1,10 @@
+/**
+ *
+ *  Sets cell color scheme application wide
+ *
+**/
 
-
-const COLORS = {
+export default {
 	cellBorder: '#3a3a3a',
 	
 	deadCell: '#000000',
@@ -8,6 +12,5 @@ const COLORS = {
 	
 	gradientStart: 'rgba(67, 211, 0, 0)',
 	gradientStop: 'rgba(67, 211, 0, .1)'
-}
+};
 
-export default COLORS;

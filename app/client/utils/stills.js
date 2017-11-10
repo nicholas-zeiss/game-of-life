@@ -1,6 +1,10 @@
+/**
+ *
+ *	Some well known stills
+ *
+**/
 
-
-const STILLS = {
+export default {
 	Beehive: {
 		cells: [
 							[0, 1], [0, 2],
@@ -51,7 +55,4 @@ const STILLS = {
 		height: 3
 	}
 };
-
-
-export default STILLS;
 

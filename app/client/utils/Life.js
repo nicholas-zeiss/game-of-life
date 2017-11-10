@@ -1,16 +1,28 @@
 /**
-This class implements Conway's game of life. It holds the state of all the cells in a 2d array and updates them
-when called to do so. It wraps around its borders, ie a cell on the left edge can count cells on the right edge
-as neighbors.
+ *
+ * 	This class implements Conway's Game of Life. It holds the state of all the cells in a 2d array and updates them
+ * 	when called to do so. It wraps around its borders, ie a cell on the left edge can count cells on the right edge
+ * 	as neighbors.
+ *
 **/
+
+
+const emptyBoard = (width, height) => (
+	new Array(height)
+		.fill(1)
+		.map(() => (
+			new Array(width)
+				.fill(0)
+		))
+);
 
 
 class Life {
 	constructor(width, height) {
-		this.width = width;
-		this.height = height;
-		this.board = new Array(height).fill(1).map(el => new Array(width).fill(0));
+		this.board = emptyBoard(width, height);
 		this.generation = 0;
+		this.height = height;
+		this.width = width;
 	}
 
 
@@ -19,26 +31,24 @@ class Life {
 	}
 
 
+	// updates board and returns if any live cells remain so that we know
+	// to stop running simulation
 	updateBoard() {
-		let newBoard = new Array(this.height).fill(1).map(el => new Array(this.width).fill(0));
+		const newBoard = emptyBoard(this.width, this.height);
 		let anyAlive = false;
 
 		for (let r = 0; r < this.height; r++) {
 			for (let c = 0; c < this.width; c++) {
-
-				let count = this.countLiveNeighbors(r, c);
+				const count = this.countLiveNeighbors(r, c);
 
 				if (count < 2) {
 					newBoard[r][c] = 0;
-
 				} else if (count == 2) {
 					newBoard[r][c] = this.board[r][c];
 					anyAlive = !!newBoard[r][c] || anyAlive;
-
 				} else if (count == 3) {
-				  newBoard[r][c] = 1;
+					newBoard[r][c] = 1;
 					anyAlive = true;
-
 				} else {
 					newBoard[r][c] = 0;
 				}
@@ -57,35 +67,38 @@ class Life {
 
 		for (let r = -1; r < 2; r++) {
 			for (let c = - 1; c < 2; c++) {
-				
 				if (r == 0 && c == 0) continue;
-				
-				//here we allow the board to wrap around the edges
-				let wrapRow = (row + r) == -1          ? this.height - 1 :
-											(row + r) == this.height ? 0               :
-											row + r;
-				
 
-				let wrapCol = (col + c) == -1         ? this.width - 1 :
-											(col + c) == this.width ? 0              :
-											col + c;
+				const nRow = wrap(row + r, this.height);
+				const nCol = wrap(col + c, this.width);
 
-				this.board[wrapRow][wrapCol] ? count++ : null;
+				this.board[nRow][nCol] ? count++ : null;
 			}
 		}
 
 		return count;
-	}
 
-
-	print() {
-		this.board.forEach(row => console.log(row, '\n'));
+		function wrap(index, length) {
+			if (index == -1) {
+				return length - 1;
+			} else if (index == length) {
+				return 0;
+			}
+			return index;
+		}
 	}
 
 
 	clear() {
-		this.board = new Array(this.height).fill(1).map(el => new Array(this.width).fill(0));
+		this.board = emptyBoard(this.width, this.height);
 		this.generation = 0;
+	}
+
+
+	toString() {
+		return this.board
+			.map(row => row.join(' '))
+			.join('\n');
 	}
 }
 

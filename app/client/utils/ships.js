@@ -1,6 +1,10 @@
+/**
+ *
+ *	Some well known ships
+ *
+**/
 
-
-const SHIPS = {
+export default {
 	['Glider Gun']: {
 		cells: [
 																																																																																																															[0, 24],
@@ -42,7 +46,4 @@ const SHIPS = {
 		height: 4
 	},
 };
-
-
-export default SHIPS;
 

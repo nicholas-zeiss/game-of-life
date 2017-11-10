@@ -156,7 +156,7 @@ class View extends React.Component {
 
 	mouseSelect(isClick, e) {
 		const button = e.buttons ? e.buttons : e.nativeEvent.which ? e.nativeEvent.which : 0;
-		console.log(e.nativeEvent)
+
 		if (isClick || button == 1) {
 			let r = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
 			let c = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
