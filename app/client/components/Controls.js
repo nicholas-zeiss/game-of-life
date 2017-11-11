@@ -1,5 +1,7 @@
 /**
-This stateless component holds various buttons used to manipulate the game of life through callbacks it receives in props
+ *
+ *	Holds various buttons used to manipulate the game of life through callbacks
+ *
 **/
 
 import React from 'react';
@@ -8,42 +10,36 @@ import React from 'react';
 const Controls = props => {
 	const toggleAnimation = () => {
 		props.animating ? props.stopAnimation() : props.startAnimation();
-	}
+	};
+
+	const speed = [ 'Slow', 'Medium', 'Fast' ][props.speed];
 
 	return  (
-		<div id='controls-container'>
-			
-			<button 
-				type='button' 
-				onClick={toggleAnimation}>
-				{props.animating ? 'Pause' : 'Play'}
+		<div id='controls-container'>	
+			<button onClick={ toggleAnimation } type='button'>
+				{ props.animating ? 'Pause' : 'Play' }
 			</button>
 
 			<div id='speed'>
-				<button
-					type='button'
-					disabled={props.speed === 0}
-					onClick={props.changeSpeed.bind(null, -1)}>
+				<button disabled={ props.speed == 0 } onClick={ props.changeSpeed.bind(null, -1) }>
 					-
 				</button>
-				<div>{['Slow', 'Medium', 'Fast'][props.speed]}</div>
-				<button
-					type='button'
-					disabled={props.speed === 2}
-					onClick={props.changeSpeed.bind(null, 1)}>
+
+				<div>{ speed }</div>
+
+				<button disabled={ props.speed == 2 } onClick={ props.changeSpeed.bind(null, 1) }>
 					+
 				</button>
 			</div>
 			
-			<button
-				id='clear'
-				type='button'
-			  onClick={props.clear}>
-			  Clear Board
+			<button id='clear' onClick={ props.clear }>
+				Clear Board
 			</button>
 		
 		</div>
-	)
+	);
 };
 
+
 export default Controls;
+

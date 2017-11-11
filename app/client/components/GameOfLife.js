@@ -28,7 +28,7 @@ class GameOfLife extends React.Component {
 			cellColumns: 80,
 			cellRows: 35,
 			life: new Life(80, 35),
-			speed: 1,								// 0: slow, 1: medium, 2: fast
+			speed: 0,								// 0: slow, 1: medium, 2: fast
 			selectedPreset: null
 		};
 	}
