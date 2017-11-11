@@ -5,13 +5,17 @@ This stateless component holds various buttons used to manipulate the game of li
 import React from 'react';
 
 
-const Controls = (props) => {
+const Controls = props => {
+	const toggleAnimation = () => {
+		props.animating ? props.stopAnimation() : props.startAnimation();
+	}
+
 	return  (
 		<div id='controls-container'>
 			
 			<button 
 				type='button' 
-				onClick={props.toggleAnimation}>
+				onClick={toggleAnimation}>
 				{props.animating ? 'Pause' : 'Play'}
 			</button>
 

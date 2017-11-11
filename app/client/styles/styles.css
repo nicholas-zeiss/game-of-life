@@ -33,18 +33,12 @@ button:active, button:focus {
 #app {
 	min-width: 100vw;
 	min-height: 100vh;
-	
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
 }
 
 
 	#header {
 		width: 100vw;
-
-		flex: 0 0 76px;
+		height: 76px;
 		
 		text-align: center;
 		
@@ -59,6 +53,13 @@ button:active, button:focus {
 			font-size: 50px;
 		}
 
+	#life-container {
+		width: 100%;
+		height: calc(100vh - 76px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
 	#view-controls-container {
 		width: 70vw;

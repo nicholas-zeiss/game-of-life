@@ -42,17 +42,16 @@ class View extends React.Component {
 
 
 	componentDidUpdate() {
-		let glow = document.getElementById('glow-canvas').getContext('2d');
-		let cellSize = this.props.cellSize;
+		// let glow = document.getElementById('glow-canvas').getContext('2d');
+		// let cellSize = this.props.cellSize;
 		
-		let gradient = glow.createRadialGradient(4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 0);																																				 
-		gradient.addColorStop(0, COLORS.gradientStart);									
-		gradient.addColorStop(1, COLORS.gradientStop);
+		// let gradient = glow.createRadialGradient(4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 4 * cellSize, 0);																																				 
+		// gradient.addColorStop(0, COLORS.gradientStart);									
+		// gradient.addColorStop(1, COLORS.gradientStop);
 		
-		glow.clearRect(0, 0, 8 * cellSize, 8 * cellSize)
-		glow.fillStyle = gradient;
-		glow.fillRect(0, 0, 8 * cellSize, 8 * cellSize);
-
+		// glow.clearRect(0, 0, 8 * cellSize, 8 * cellSize)
+		// glow.fillStyle = gradient;
+		// glow.fillRect(0, 0, 8 * cellSize, 8 * cellSize);
 		this.drawCellBoard();
 	}
 
@@ -121,11 +120,9 @@ class View extends React.Component {
 
 
 	renderGlow(r, c) {
-		let glow = document.getElementById('glow-canvas');
-		
-		let x = (c + .5) * this.props.cellSize, y = (r + .5) * this.props.cellSize;
+				let x = (c + .5) * this.props.cellSize, y = (r + .5) * this.props.cellSize;
 
-		this.state.container.drawImage(glow, x - this.props.cellSize * 4, y - this.props.cellSize * 4);
+		this.state.container.drawImage(this.props.glow, x - this.props.cellSize * 4, y - this.props.cellSize * 4);
 	}
 
 
@@ -183,20 +180,13 @@ class View extends React.Component {
 
 	render() {
 		return (
-			<div id='view-container'>
-				<canvas
-					id='glow-canvas'
-					height={8 * this.props.cellSize}
-					width={8 * this.props.cellSize}>
-				</canvas>
-				<canvas
-					id='life-canvas'
-					height={this.props.cellSize * this.props.rows}
-					width={this.props.cellSize * this.props.columns}
-					onClick={this.handleMouse.bind(this, true)}
-					onMouseMove={this.handleMouse.bind(this, false)}> 
-				</canvas>
-			</div>
+			<canvas
+				id='life-canvas'
+				height={this.props.cellSize * this.props.rows}
+				width={this.props.cellSize * this.props.columns}
+				onClick={this.handleMouse.bind(this, true)}
+				onMouseMove={this.handleMouse.bind(this, false)}> 
+			</canvas>
 		);
 	}
 }

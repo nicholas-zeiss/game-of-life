@@ -12,7 +12,7 @@ module.exports = {
 	module: {
 		loaders: [{
 			test: /\.js$/,
-			loaders: ['babel?presets[]=es2015&presets[]=react'],
+			loaders: ['babel?presets[]=es2015&presets[]=react&plugins[]=transform-class-properties'],
 			include: path.join(__dirname, 'app/client')
 		}]
 	},

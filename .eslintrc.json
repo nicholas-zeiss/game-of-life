@@ -52,7 +52,16 @@
                 ],
                 "no-console": "off",
                 "react/prop-types": [ 0 ],
-                "react/jsx-curly-spacing": [ 2, { "when": "always", "children": true }],
+                "react/jsx-curly-spacing": [
+                    2,
+                    { 
+                        "when": "always",
+                        "children": true,
+                        "spacing": {
+                            "objectLiterals": "never"
+                        }
+                    }
+                ],
                 "react/jsx-sort-props": [ 2, {
                   "callbacksLast": false,
                   "shorthandFirst": false,

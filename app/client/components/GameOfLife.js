@@ -1,25 +1,20 @@
 /**
-This is the root component of this app. It holds the instance of the Life class which models our game of life state (a 2d array
-where 0 is a dead cell and 1 a live cell). It also holds all the logic to update it as necessary. It has subcomponents View and 
-Controls, which render the game and handle user input respectively.
+ *
+ *	This is the root component of this app. It holds the instance of the Life class which models our game of life state (a 2d array
+ *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update it as necessary. It has subcomponents View and 
+ *	Controls, which render the game and handle user input respectively.
+ *
 **/
 
 import React from 'react';
-
-import Life from '../utils/Life';
-
-import COLORS from '../utils/colors';
 
 import Controls from './Controls';
 import View from './View';
 import Selector from './Selector';
 
-
-const SPEEDS = [
-	300,
-	150,
-	50
-];
+import colors from '../utils/colors';
+import Life from '../utils/Life';
+import speeds from '../utils/speeds';
 
 
 class GameOfLife extends React.Component {
@@ -27,161 +22,174 @@ class GameOfLife extends React.Component {
 		super(props);
 
 		this.state = {
-			life: new Life(80, 35),
-			
-			cellRows: 35,
-			cellColumns: 80,
-
-			canvas: null,
+			animating: false,
+			animateInterval: null,
 			canvasWidth: 800,
-			
-			animating: false,			
-			intervalID: null,
-			speed: 1,
-
+			cellColumns: 80,
+			cellRows: 35,
+			life: new Life(80, 35),
+			speed: 1,								// 0: slow, 1: medium, 2: fast
 			selectedPreset: null
 		};
 	}
 
 
+	// as a window resize changes the size of each cell we must track changes
 	componentDidMount() {
-		//so that View component gets updated cellSize prop
-		window.onresize = () => {
-			this.setState({
-				canvasWidth: document.getElementById('life-canvas').offsetWidth
-			});
+		const setCanvasSize = () => this.setState({ 
+			canvasWidth: this.canvasContainer.offsetWidth 
+		});
+		
+		window.onresize = setCanvasSize;
+		setCanvasSize();
+	}
+
+
+	// to save computation the glow applied to live cells is only created once in a separate
+	// undisplayed canvas which must be updated on window resizes
+	componentDidUpdate(prevProps, prevState) {
+		if (this.state.canvasWidth != prevState.canvasWidth) {
+			const ctx = this.glowCanvas.getContext('2d');
+			const radius = 4 * this.state.canvasWidth / this.state.cellColumns;
+			
+			const gradient = ctx.createRadialGradient(radius, radius, radius, radius, radius, 0);																																				 
+			gradient.addColorStop(0, colors.gradientStart);									
+			gradient.addColorStop(1, colors.gradientStop);
+			
+			ctx.clearRect(0, 0, 2 * radius, 2 * radius);
+			ctx.fillStyle = gradient;
+			ctx.fillRect(0, 0, 2 * radius, 2 * radius);
 		}
-
-		let canvas = document.getElementById('life-canvas');
-
-		this.setState({
-			canvas: canvas,
-			canvasWidth: canvas.offsetWidth
-		});
 	}
 
 
-	toggleAnimation() {
-		let id = null;
+	// set an interval and return the id
+	animate = speed => {
+		return setInterval(() => {
+			// updateBoard will return false if no living cells remain
+			if (!this.state.life.updateBoard()) {
+				this.stopAnimation();
+			}
 
-    if (this.state.animating) {
-      clearInterval(this.state.intervalID);
-    
-    } else {
-    	id = setInterval(() => {
-    		//updateBoard will return false if no living cells remain
-    		if (!this.state.life.updateBoard()) {
-    			this.toggleAnimation();
-    		}
-
-    		this.forceUpdate();
-    	}, SPEEDS[this.state.speed]);   	
-    }
-
-  	this.setState({
-  		animating : !this.state.animating,
-  		intervalID : id
-  	});
+			this.forceUpdate();
+		}, speed);
 	}
 
 
-	toggleCells(cellSet, clearPreset) {
-		cellSet.forEach(str => {
-			let [r, c] = str.split(':');
-			this.state.life.flipCellState(Number(r), Number(c))
+	// start and stop take an optional callback executed after animation starts/stops
+	startAnimation = cb => {
+		cb = cb || function() {};
+
+		if (!this.state.animating) {
+			this.setState({
+				animating: true,
+				animateInterval: this.animate(speeds[this.state.speed])
+			}, cb);
+		}
+	}
+
+
+	stopAnimation = cb => {
+		cb = cb || function() {};
+
+		if (this.state.animating) {
+			clearInterval(this.state.animateInterval);
+			
+			this.setState({
+				animating: false,
+				animateInterval: null
+			}, cb);
+		}
+	}
+
+
+	toggleCells = (cellSet, clearPreset) => {
+		cellSet.forEach(cell => {
+			let [r, c] = cell.split(':');
+			this.state.life.flipCellState(r, c);
 		});
 
+		// clearPreset is true if user just placed a preset cell structure
 		if (clearPreset) {
 			document.getElementById('app').style.cursor = 'auto';
-			this.setState({selectedPreset: null});
+			this.setState({ selectedPreset: null });
 		} else {
 			this.forceUpdate();
 		}
 	}
 
 
-	clear() {
+	clear = () => {
 		this.state.life.clear();
-
-		if (this.state.animating) {
-			clearInterval(this.state.intervalID);
-		}
-
-		this.setState({
-			animating : false,
-			intervalID : null
-		});
+		this.state.animating ? this.stopAnimation() : this.forceUpdate();
 	}
 
 
-	setPreset(cells) {
+	setPreset = cells => {
 		document.getElementById('app').style.cursor = 'move';
-		
-		if (this.state.animating) {
-			this.setState({selectedPreset: cells}, this.toggleAnimation);
-		
-		} else {
-			this.setState({selectedPreset: cells});
-		}
+		this.setState({ selectedPreset: cells }, this.stopAnimation);
 	}
 
 
-	changeSpeed(inc) {
+	changeSpeed = inc => {
 		if (!this.state.animating) {
-			this.setState({
-				speed: this.state.speed + inc
-			});
+			this.setState({ speed: this.state.speed + inc });
 		
 		} else {
-			clearInterval(this.state.intervalID);
-			
-			let id = setInterval(() => {
-    		if (!this.state.life.updateBoard()) {
-    			this.toggleAnimation();
-    		}
-
-	    	this.forceUpdate();
-
-	    }, SPEEDS[this.state.speed + inc]);
-		  
-	  	this.setState({
-	  		speed: this.state.speed + inc,
-	  		intervalID : id
-	  	});
-    }
+			this.stopAnimation(() => {
+				this.setState({ 
+					speed: this.state.speed + inc
+				}, this.startAnimation);
+			});
+		}
 	}
 
 
 	render() {
+		const cellSize = this.state.canvasWidth / this.state.cellColumns;
+
 		return (
 			<div id='app'>			
 				<div id='header'>
-					<h1>Conway's Game of Life</h1>
+					<h1> Conway&apos;s Game of Life </h1>
 				</div>
 				
-				<div id='view-controls-container'>
-					<div>{`Generation: ${this.state.life.generation}`}</div>
-					<View 
-						cells={this.state.life.board}
-						rows={this.state.cellRows}
-						columns={this.state.cellColumns}
-						cellSize={this.state.canvasWidth / this.state.cellColumns}
-						toggleCells={this.toggleCells.bind(this)}
-						preset={this.state.selectedPreset}
-						animating={this.state.animating}/> 
-					<Controls
-						toggleAnimation={this.toggleAnimation.bind(this)} 
-						clear={this.clear.bind(this)} 
-						animating={this.state.animating}
-						speed={this.state.speed}
-						changeSpeed={this.changeSpeed.bind(this)}/>
+				<div id='life-container'>
+					<div id='view-controls-container'>
+						<div>{ `Generation: ${this.state.life.generation}` }</div>
+						
+						<div id='view-container' ref={ el => this.canvasContainer = el }>
+							<View 
+								cellSize={ cellSize }
+								cells={ this.state.life.board }
+								columns={ this.state.cellColumns }
+								glow={ this.glowCanvas }
+								preset={ this.state.selectedPreset }
+								rows={ this.state.cellRows }
+								toggleCells={ this.toggleCells }
+							/> 
+						</div>
+						
+						<Controls
+							animating={ this.state.animating } 
+							changeSpeed={ this.changeSpeed } 
+							clear={ this.clear }
+							speed={ this.state.speed }
+							startAnimation={ this.startAnimation }
+							stopAnimation={ this.stopAnimation }
+						/>
+					</div>
 				</div>
 				
-				<Selector
-					select={this.setPreset.bind(this)}/>
+				<Selector select={ this.setPreset }/>
 
-				<div className='empty'>
-				</div>
+				<canvas
+					height={ 8 * cellSize }
+					id='glow-canvas'
+					ref={ canvas => this.glowCanvas = canvas }
+					style={{ height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
+					width={ 8 * cellSize }
+				/>
 			</div>
 		);	
 	}
