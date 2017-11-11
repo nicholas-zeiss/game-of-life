@@ -12,6 +12,7 @@ import Controls from './Controls';
 import View from './View';
 import Selector from './Selector';
 
+import { drawGlow } from '../utils/cells';
 import colors from '../utils/colors';
 import Life from '../utils/Life';
 import speeds from '../utils/speeds';
@@ -52,13 +53,7 @@ class GameOfLife extends React.Component {
 			const ctx = this.glowCanvas.getContext('2d');
 			const radius = 4 * this.state.canvasWidth / this.state.cellColumns;
 			
-			const gradient = ctx.createRadialGradient(radius, radius, radius, radius, radius, 0);																																				 
-			gradient.addColorStop(0, colors.gradientStart);									
-			gradient.addColorStop(1, colors.gradientStop);
-			
-			ctx.clearRect(0, 0, 2 * radius, 2 * radius);
-			ctx.fillStyle = gradient;
-			ctx.fillRect(0, 0, 2 * radius, 2 * radius);
+			drawGlow(ctx, radius, colors.gradientStart, colors.gradientStop);
 		}
 	}
 

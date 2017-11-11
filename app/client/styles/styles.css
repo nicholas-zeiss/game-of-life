@@ -229,12 +229,12 @@ button:active, button:focus {
 			}
 
 
-				.selector-category {
+				.preset-category {
 					margin: 10px 15px;				
 				}
 
 
-					.selector-category-label {
+					.preset-category-label {
 						margin-bottom: 10px;
 
 						text-decoration: underline;
@@ -244,12 +244,12 @@ button:active, button:focus {
 					}
 
 
-					.selector-shape-label {
+					.preset-label {
 						margin-left: 10px;
 					}
 
 
-					.selector-canvas {
+					.preset-canvas {
 						margin: 20px;
 						
 						cursor: pointer;

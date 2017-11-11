@@ -1,125 +1,107 @@
-
+/**
+ *
+ *	A collapsible menu allowing a user to select a preset cell structure to insert onto the board. Each preset gets
+ *  its own canvas on which it is drawn, clicking that canvas selects the preset and closes the menu.
+ *
+**/
 
 import React from 'react';
 
-import COLORS from '../utils/colors';
+import { drawCell } from '../utils/cells';
+import colors from '../utils/colors';
+import oscillators from '../utils/oscillators';
+import ships from '../utils/ships';
+import stills from '../utils/stills';
 
-import OSCILLATORS from '../utils/oscillators';
-import SHIPS from '../utils/ships';
-import STILLS from '../utils/stills';
+
+const cellSize = 10;
+const presets = Object.assign({}, oscillators, ships, stills);
 
 
 class Selector extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			cellSize: 10
-		}
+		this.state = { open: false };
+		this.contexts = {};
 	}
 
 
 	componentDidMount() {
-		let size = this.state.cellSize;
+		const color = colors.liveCell;
 
-		let PRESETS = Object.assign({}, OSCILLATORS, SHIPS, STILLS);
+		for (let shape in presets) {
+			const ctx = this.contexts[shape];
+			const preset = presets[shape];
 
-		for (let shape in PRESETS) {
-			let preset = PRESETS[shape];
-			
-			let ctx = document.getElementById(`selector-${shape}`).getContext('2d');
-
-			for (let i = 0; i < preset.cells.length; i++) {
-				let r = preset.cells[i][0];
-				let c = preset.cells[i][1];
-
-				ctx.fillStyle = COLORS.cellBorder;
-				ctx.fillRect(size * c, size * r, size, size);
-
-				ctx.fillStyle = COLORS.liveCell;
-				ctx.fillRect(size * c + 1, size * r + 1, size - 1, size - 1);
-			}
+			// each cell is [ int row, int col ]
+			preset.cells.forEach(([r, c]) => drawCell(ctx, color, r, c, cellSize));
 		}
 	}
 
 
-	shouldComponentUpdate(nextProps) {
-		return false;
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.state.open != nextState.open;
 	}
 
 
-	toggle(presetCells, e) {
-		let modal = document.getElementById('selector-container');
-		
-		if (e.target.className === 'selector-canvas') {
-			this.props.select(presetCells);
-		}
-
-		if (modal.style.left === '0px') {
-			modal.style.left = '-410px';
-		} else {
-			modal.style.left = '0px';
-		}
+	toggle = () => {
+		this.setState({ open: !this.state.open });
 	}
 
 
-	createCanvases(preset, presetName) {	
-		let shapes = [];
+	selectPreset = cells => {		
+		this.props.select(cells);
+		this.toggle();
+	}
 
-		for (let shape in preset) {
-			shapes.push(
-				<div 
-					key={`${shape}-label`}
-					className='selector-preset-label'>
-					{shape}
-				</div>,
+
+	createCanvases(presets, groupName) {
+		let canvases = [];
+
+		for (let preset in presets) {
+			canvases.push(
+				<div className='preset-label' key={ preset + '-label' }>{ preset }</div>,
 				
 				<canvas 
-					key={shape}
-					className='selector-canvas'
-					id={`selector-${shape}`}
-					width={this.state.cellSize * preset[shape].width}
-					height={this.state.cellSize * preset[shape].height}
-					onClick={this.toggle.bind(this, preset[shape].cells)}>
+					className='preset-canvas'
+					height={ cellSize * presets[preset].height }
+					key={ preset }
+					onClick={ this.selectPreset.bind(this, presets[preset].cells) }
+					ref={ canvas => canvas ? this.contexts[preset] = canvas.getContext('2d') : null }
+					width={ cellSize * presets[preset].width }
+				>
 				</canvas>
 			);
 		}
 
 		return (
-			<div 
-				key={`${presetName}-category`}
-				className='selector-category'>
-				<div 
-					key={`${presetName}-label`}
-					className='selector-category-label'>
-					{`${presetName}:`}
-				</div>
-				{shapes}
+			<div className='preset-category' key={ groupName + '-category' }>
+				<div className='preset-category-label' key={ groupName }>{ groupName + ':' }</div>
+				{ canvases }
 			</div>
 		);
 	}
 	
 
 	render() {
-		let content = [];
-		
-		content.push(this.createCanvases(STILLS, 'Stills'));
-		content.push(this.createCanvases(OSCILLATORS, 'Oscillators'));
-		content.push(this.createCanvases(SHIPS, 'Ships'));
+		const content = [
+			this.createCanvases(stills, 'Stills'),
+			this.createCanvases(oscillators, 'Oscillators'),
+			this.createCanvases(ships, 'Ships')
+		];
 
 		return (
-			<div id='selector-container'>
+			<div
+				id='selector-container'
+				ref={ div => this.container = div }
+				style={{ left: this.state.open ? '0px' : '-445px', width: '450px' }}
+			>
 				<div id='selector'>
-					<div id='selector-title'>Useful Patterns</div>
-					<div id='selector-content'>
-						{content}
-					</div>
+					<div id='selector-title'> Useful Patterns </div>
+					<div id='selector-content'>{ content }</div>
 				</div>
 				
-				<button 
-					id='selector-toggle'
-					type='button' 
-					onClick={this.toggle.bind(this, null)}>
+				<button  id='selector-toggle' onClick={ this.toggle }>
 					&#8811;
 				</button>
 			</div>

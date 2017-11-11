@@ -120,7 +120,7 @@ class View extends React.Component {
 
 
 	renderGlow(r, c) {
-				let x = (c + .5) * this.props.cellSize, y = (r + .5) * this.props.cellSize;
+		let x = (c + .5) * this.props.cellSize, y = (r + .5) * this.props.cellSize;
 
 		this.state.container.drawImage(this.props.glow, x - this.props.cellSize * 4, y - this.props.cellSize * 4);
 	}

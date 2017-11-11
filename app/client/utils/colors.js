@@ -5,7 +5,7 @@
 **/
 
 export default {
-	cellBorder: '#3a3a3a',
+	cellBorder: '#636363',
 	
 	deadCell: '#000000',
 	liveCell: '#43d300',
