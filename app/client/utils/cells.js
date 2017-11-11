@@ -4,18 +4,22 @@
  *
 **/
 
+import colors from './colors';
 
-export const addGlow = (ctx, glow, cx, cy, size) => {
+export const addGlow = (ctx, glow, row, col, size) => {
+	const cx = (col + .5) * size;
+	const cy = (row + .5) * size;
+
 	ctx.drawImage(glow, cx - size * 4, cy - size * 4);
 };
 
 
-export const drawCell = (ctx, color, row, col, size) => {
+export const drawCell = (ctx, alive, row, col, size) => {
 	const x = col * size;
 	const y = row * size;
 
-	ctx.fillStyle = color;
-	ctx.fillRect(x + 1, y + 1, size - 1, size - 1);
+	ctx.fillStyle = alive ? colors.liveCell : colors.deadCell;
+	ctx.fillRect(x + 1, y + 1, size - 1, size - 1);			// +/- 1 preserves outline of cell
 };
 
 

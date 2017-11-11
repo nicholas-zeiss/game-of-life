@@ -33,7 +33,6 @@ class Selector extends React.Component {
 			const ctx = this.contexts[shape];
 			const preset = presets[shape];
 
-			// each cell is [ int row, int col ]
 			preset.cells.forEach(([r, c]) => drawCell(ctx, color, r, c, cellSize));
 		}
 	}

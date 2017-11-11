@@ -54,6 +54,9 @@ class GameOfLife extends React.Component {
 			const radius = 4 * this.state.canvasWidth / this.state.cellColumns;
 			
 			drawGlow(ctx, radius, colors.gradientStart, colors.gradientStop);
+
+			// now that the glow canvas is drawn we need to force <View/> to redraw
+			this.forceUpdate();
 		}
 	}
 
@@ -126,6 +129,7 @@ class GameOfLife extends React.Component {
 	}
 
 
+	// inc is +/- 1
 	changeSpeed = inc => {
 		if (!this.state.animating) {
 			this.setState({ speed: this.state.speed + inc });
@@ -154,7 +158,8 @@ class GameOfLife extends React.Component {
 						<div>{ `Generation: ${this.state.life.generation}` }</div>
 						
 						<div id='view-container' ref={ el => this.canvasContainer = el }>
-							<View 
+							<View
+								animating={ this.state.animating }
 								cellSize={ cellSize }
 								cells={ this.state.life.board }
 								columns={ this.state.cellColumns }
