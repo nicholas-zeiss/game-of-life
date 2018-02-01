@@ -1,7 +1,7 @@
 {
-  "name": "connect4",
+  "name": "game-of-life",
   "version": "1.0.0",
-  "description": "A web app for playing connect four",
+  "description": "A web app for simulating Conway's game of life",
   "main": "index.js",
   "dependencies": {
     "babel": "^6.5.2",
