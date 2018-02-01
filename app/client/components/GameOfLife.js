@@ -1,8 +1,8 @@
 /**
  *
  *	This is the root component of this app. It holds the instance of the Life class which models our game of life state (a 2d array
- *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update the model as necessary. It has subcomponents View and 
- *	Controls, which render the game and handle user input.
+ *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update it as necessary. It has subcomponents View and 
+ *	Controls, which render the game and handle user input respectively.
  *
 **/
 
@@ -29,22 +29,16 @@ class GameOfLife extends React.Component {
 			cellColumns: 80,
 			cellRows: 35,
 			life: new Life(80, 35),
-			speed: 1,								// 0: slow, 1: medium, 2: fast
+			speed: 0,								// 0: slow, 1: medium, 2: fast
 			selectedPreset: null
 		};
-
-		this.state.life.flipCellState(15, 36);
-		this.state.life.flipCellState(15, 37);
-		this.state.life.flipCellState(16, 35);
-		this.state.life.flipCellState(16, 36);
-		this.state.life.flipCellState(17, 36);
 	}
 
 
-	// as a window resize changes the size of our canvas must change
+	// as a window resize changes the size of each cell we must track changes
 	componentDidMount() {
 		const setCanvasSize = () => this.setState({ 
-			canvasWidth: this.canvasContainer.clientWidth 
+			canvasWidth: this.canvasContainer.offsetWidth 
 		});
 		
 		window.onresize = setCanvasSize;
@@ -80,7 +74,7 @@ class GameOfLife extends React.Component {
 	}
 
 
-	// start and stop take an optional callback to be executed after animation starts/stops
+	// start and stop take an optional callback executed after animation starts/stops
 	startAnimation = cb => {
 		cb = cb || function() {};
 
@@ -89,8 +83,6 @@ class GameOfLife extends React.Component {
 				animating: true,
 				animateInterval: this.animate(speeds[this.state.speed])
 			}, cb);
-		} else {
-			cb();
 		}
 	}
 
@@ -105,8 +97,6 @@ class GameOfLife extends React.Component {
 				animating: false,
 				animateInterval: null
 			}, cb);
-		} else {
-			cb();
 		}
 	}
 
@@ -128,10 +118,8 @@ class GameOfLife extends React.Component {
 
 
 	clear = () => {
-		this.stopAnimation(() => {
-			this.state.life.clear();
-			this.forceUpdate();
-		});
+		this.state.life.clear();
+		this.state.animating ? this.stopAnimation() : this.forceUpdate();
 	}
 
 
@@ -163,7 +151,6 @@ class GameOfLife extends React.Component {
 			<div id='app'>			
 				<div id='header'>
 					<h1> Conway&apos;s Game of Life </h1>
-					<h4>Use your mouse to toggle one or more cells (game must be paused), or insert a preset structure from the menu on the left.</h4>
 				</div>
 				
 				<div id='life-container'>
@@ -198,8 +185,9 @@ class GameOfLife extends React.Component {
 
 				<canvas
 					height={ 8 * cellSize }
+					id='glow-canvas'
 					ref={ canvas => this.glowCanvas = canvas }
-					style={{ display: 'none', height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
+					style={{ height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
 					width={ 8 * cellSize }
 				/>
 			</div>

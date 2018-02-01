@@ -17,24 +17,25 @@ const Controls = props => {
 	return  (
 		<div id='controls-container'>	
 			<button onClick={ toggleAnimation } type='button'>
-				{ props.animating ? 'Pause' : 'Start' }
+				{ props.animating ? 'Pause' : 'Play' }
 			</button>
 
 			<div id='speed'>
 				<button disabled={ props.speed == 0 } onClick={ props.changeSpeed.bind(null, -1) }>
-					&#8810;
+					-
 				</button>
 
 				<div>{ speed }</div>
 
 				<button disabled={ props.speed == 2 } onClick={ props.changeSpeed.bind(null, 1) }>
-					&#8811;
+					+
 				</button>
 			</div>
 			
 			<button id='clear' onClick={ props.clear }>
 				Clear Board
 			</button>
+		
 		</div>
 	);
 };
