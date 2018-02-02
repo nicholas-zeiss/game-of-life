@@ -151,7 +151,13 @@ class View extends React.Component {
 
 		if (!this.validCell(row, col)) return;
 
-		const button = e.buttons ? e.buttons : e.nativeEvent.which ? e.nativeEvent.which : 0;
+		let button = 0;
+
+		if (e.buttons != undefined) {
+			button = e.buttons;
+		} else if (e.nativeEvent.which != undefined) {
+			button = e.nativeEvent.which;
+		}
 
 		if (button == 1 && !this.props.preset) {
 			if (!this.state.selectedCells.has(row + ':' + col)) {
@@ -170,6 +176,7 @@ class View extends React.Component {
 				height={ this.props.cellSize * this.props.rows }
 				id='life-canvas'
 				onClick={ this.handleClick }
+				onDrag={ e => console.log(e.buttons, e.nativeEvent.offsetX, e.nativeEvent.offsetY) }
 				onMouseLeave={ this.handleMouseLeave }
 				onMouseMove={ this.handleMouseMove }
 				ref={ canvas => canvas ? this.ctx = canvas.getContext('2d') : null }

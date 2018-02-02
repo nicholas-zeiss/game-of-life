@@ -5,28 +5,43 @@ body {
 	
 	font-family: 'Roboto Mono', monospace;	
 	font-weight: 500;
+	text-shadow: 1px 1px 1px #3f3f3f;
 	
-	background-color: white;
+	color: #ececec;
+	background-color: #333333;
 
-	-webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
             user-select: none;
 }
 
 
 button {
+	margin: 0;
+	padding: 0;
+
 	font-family: 'Roboto Mono', monospace;
 	font-weight: 500;
-	
+	text-shadow: 1px 1px 1px #3f3f3f;
+
+	color: #e2e0e0;
+	background-color: #d83422;
+			
 	cursor: pointer;
 }
 
 
 button:active, button:focus {
 	outline: none;
+}
+
+
+button:disabled {
+	color: #828282;
+	background-color: #a5250f;
 }
 
 
@@ -38,47 +53,61 @@ button:active, button:focus {
 
 	#header {
 		width: 100vw;
-		height: 76px;
+		height: 100px;
 		
+		box-shadow: 0 0 20px 1px black;
+
 		text-align: center;
 		
-		background-color: red;
+		background-color: #3b62d6;
 	}
 
 
 		#header > h1 {
-			padding-bottom: 10px;
+			padding: 0;
 			margin: 0;
 			
-			font-size: 50px;
+			font-size: 40px;
+			text-shadow: 1px 1px 2px black;
 		}
+
+
+		#header > h4 {
+			width: 800px;
+
+			padding: 0;
+			margin: 0 auto;
+
+			font-size: 16px;
+			text-shadow: 1px 1px 2px black;
+		}
+
 
 	#life-container {
 		width: 100%;
-		height: calc(100vh - 76px);
+		height: calc(100vh - 100px);
+		
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
 
-	#view-controls-container {
-		width: 70vw;
-		min-width: 550px;
 
-		flex-basis: -webkit-min-content;
-  	flex-basis: -moz-min-content;
-  	flex-basis: min-content;
+	#view-controls-container {
+		box-sizing: content-box;
+		width: 80vw;
+		min-width: 550px;
 
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 
-		padding: 10px 20px 20px;
-		border: 1px solid black;
-		border-radius: 3px;
-		box-sizing: content-box;
+		padding: 10px 20px 10px;
+		border: 1px solid rgba(0, 0, 0, .7);
+		border-radius: 5px;
+		box-shadow: 0 0 20px 0px black;
 
-		background-color: red;
+		background-color: #3b62d6;
 	}
 
 
@@ -94,35 +123,27 @@ button:active, button:focus {
 
 		#view-container {
 			width: 95%;
-
 			margin-top: 10px;
 		}
 
 
 			#life-canvas {
+				box-sizing: content-box;
 				width: 100%;	
 
-				border: 2px solid blue;
+				border: 1px solid #484848;
 				border-radius: 2px;
-				box-sizing: content-box;
-			}
-
-
-			#glow-canvas {
-				display: none;
 			}
 
 
 		#controls-container {
 			width: 80%;
-
-			padding: 10px;
 			
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			
-			background-color: cyan;
+
+			padding: 10px;
 		}
 
 
@@ -131,30 +152,31 @@ button:active, button:focus {
 				
 				padding: 5px 10px;
 				border: 1px solid black;
-				border-radius: 3px;			  
+				border-radius: 7px;			  
 
 			  font-size: 18px;
-				
-				background-color: green;
 			}
 
 			#controls-container > button:first-child {
 				width: 74px;
+
+				box-shadow: 2px 2px 5px rgba(0, 0, 0, .9);
 			}
 
 
 			#speed {
+				display: flex;	
 				height: 40px;
 
-				display: flex;	
+				border-radius: 7px;
+				box-shadow: 2px 2px 5px rgba(0, 0, 0, .9);
 			}
 
 
 				#speed > * {
 					border: 1px solid black;
+					border-radius: 0;
 					box-sizing: border-box;
-
-					background-color: green;
 				}
 
 
@@ -166,22 +188,41 @@ button:active, button:focus {
 				}
 
 
+				#speed > button:first-child {
+					border-radius: 7px 0 0 7px;
+				}
+
+
 				#speed > div {
 					width: 90px;
 
 					padding: 6px 10px 4px 10px;
+					border-left-width: 0;
+					border-right-width: 0;
 
 					font-size: 18px;
 					text-align: center;
+
+					background-color: #d83422;
 				}
 
 
+				#speed > button:last-child {
+					border-radius: 0 7px 7px 0;
+				}
+
+
+			#controls-container > button:last-child {
+				box-shadow: 2px 2px 5px rgba(0, 0, 0, .9);
+			}
+
+
 	#selector-container {
-		height: 70vh;
-		
 		position: absolute;
 		left: -410px;
 		top: 15vh;
+		
+		height: 70vh;
 
 		display: flex;
 		align-items: center;
@@ -193,39 +234,33 @@ button:active, button:focus {
 
 		#selector {
 			padding: 10px 10px 20px;
-			
-			border: 1px solid black;
+			border: 1px solid rgba(0, 0, 0, .5);
 			border-left: none;
-			border-radius: 0 3px 3px 0;
-
+			border-radius: 0 5px 5px 0;
 			box-shadow: 0 0 20px 1px black;
-			
-			background-color: cyan;
+
+			background-color: #d83422;
 		}
 
 
 			#selector-title {
-				text-align: center;
-				
-				font-weight: 700;
 				font-size: 25px;
+				font-weight: 700;
+				text-align: center;
 			}
 
 
 			#selector-content {
 				height: 60vh;
 
-				margin-top: 15px;
-
 				display: flex;
 				flex-direction: column;
 				align-items: flex-start;
-				
 				overflow: auto;
 
+				margin-top: 15px;
 				
-				color: white;
-				background-color: black;
+				background-color: #040404;
 			}
 
 
@@ -237,8 +272,8 @@ button:active, button:focus {
 					.preset-category-label {
 						margin-bottom: 10px;
 
-						text-decoration: underline;
 						font-size: 20px;
+						text-decoration: underline;
 
 						color: orange;
 					}
@@ -251,23 +286,23 @@ button:active, button:focus {
 
 					.preset-canvas {
 						margin: 20px;
-						
 						cursor: pointer;
 					}
 
 
-			#selector-toggle {
-				z-index: 2;
+		#selector-toggle {
+			z-index: 2;
 
-				margin-left: -1px;
-				border: 1px solid black;
-				border-left: 1px solid cyan;
-				border-radius: 0 3px 3px 0;
+			padding: 0 5px 2px 5px;
+			border: 1px solid rgba(0, 0, 0, .5);
+			border-left: none;
+			border-radius: 0 5px 5px 0;
+			margin-left: -1px;
 
-				font-size: 35px;
-				
-				background-color: cyan;
+			font-size: 35px;
 
-				cursor: pointer;
-			}
+			background-color: #d83422;
+			
+			cursor: pointer;
+		}
 

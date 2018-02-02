@@ -5,10 +5,10 @@
 **/
 
 export default {
-	cellBorder: '#636363',
+	cellBorder: '#484848',
 	
-	deadCell: '#000000',
-	liveCell: '#43d300',
+	deadCell: '#040404',
+	liveCell: '#449e1b',
 	
 	gradientStart: 'rgba(67, 211, 0, 0)',
 	gradientStop: 'rgba(67, 211, 0, .1)'
