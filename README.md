@@ -20,4 +20,4 @@ This implementation wraps the board, so that the left edge connects to the right
 
 ## Usage
 
-Cells can be toggled by clicking or dragging your mouse. You can also pick a preset structure from the collapsible sidebar on the left to insert. These presets are well known groupings of cells with interesting effects, such as oscillating through a set pattern indefinitely, propelling themselves across the board (gliders), or even generating such gliders indefinitely!.
+Cells can be toggled by clicking or dragging your mouse. You can also pick a preset structure from the collapsible sidebar on the left to insert. These presets are well known groupings of cells with interesting effects, such as oscillating through a set pattern indefinitely, propelling themselves across the board (gliders), or even generating such gliders indefinitely!
