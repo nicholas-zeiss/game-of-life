@@ -2,11 +2,11 @@
 
 body {
 	margin: 0;
-	
-	font-family: 'Roboto Mono', monospace;	
+
+	font-family: 'Roboto Mono', monospace;
 	font-weight: 500;
 	text-shadow: 1px 1px 1px #3f3f3f;
-	
+
 	color: #ececec;
 	background-color: #333333;
 
@@ -29,7 +29,7 @@ button {
 
 	color: #e2e0e0;
 	background-color: #d83422;
-			
+
 	cursor: pointer;
 }
 
@@ -54,11 +54,11 @@ button:disabled {
 	#header {
 		width: 100vw;
 		height: 100px;
-		
+
 		box-shadow: 0 0 20px 1px black;
 
 		text-align: center;
-		
+
 		background-color: #3b62d6;
 	}
 
@@ -66,7 +66,7 @@ button:disabled {
 		#header > h1 {
 			padding: 0;
 			margin: 0;
-			
+
 			font-size: 40px;
 			text-shadow: 1px 1px 2px black;
 		}
@@ -86,7 +86,7 @@ button:disabled {
 	#life-container {
 		width: 100%;
 		height: calc(100vh - 100px);
-		
+
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -129,7 +129,7 @@ button:disabled {
 
 			#life-canvas {
 				box-sizing: content-box;
-				width: 100%;	
+				width: 100%;
 
 				border: 1px solid #484848;
 				border-radius: 2px;
@@ -138,7 +138,7 @@ button:disabled {
 
 		#controls-container {
 			width: 80%;
-			
+
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -149,10 +149,10 @@ button:disabled {
 
 			#controls-container > button {
 				height: 40px;
-				
+
 				padding: 5px 10px;
 				border: 1px solid black;
-				border-radius: 7px;			  
+				border-radius: 7px;
 
 			  font-size: 18px;
 			}
@@ -165,7 +165,7 @@ button:disabled {
 
 
 			#speed {
-				display: flex;	
+				display: flex;
 				height: 40px;
 
 				border-radius: 7px;
@@ -180,7 +180,7 @@ button:disabled {
 				}
 
 
-				#speed > button {					
+				#speed > button {
 					padding: 5px 10px;
 
 				  font-size: 22px;
@@ -219,9 +219,9 @@ button:disabled {
 
 	#selector-container {
 		position: absolute;
-		left: -410px;
+		left: -405px;
 		top: 15vh;
-		
+		width: 450px;
 		height: 70vh;
 
 		display: flex;
@@ -232,7 +232,7 @@ button:disabled {
 	}
 
 
-		#selector {
+		#selector-content {
 			padding: 10px 10px 20px;
 			border: 1px solid rgba(0, 0, 0, .5);
 			border-left: none;
@@ -243,14 +243,14 @@ button:disabled {
 		}
 
 
-			#selector-title {
+			#selector-content > p {
 				font-size: 25px;
 				font-weight: 700;
 				text-align: center;
 			}
 
 
-			#selector-content {
+			#selector-content > div {
 				height: 60vh;
 
 				display: flex;
@@ -259,17 +259,17 @@ button:disabled {
 				overflow: auto;
 
 				margin-top: 15px;
-				
+
 				background-color: #040404;
 			}
 
 
 				.preset-category {
-					margin: 10px 15px;				
+					margin: 10px 15px;
 				}
 
 
-					.preset-category-label {
+					.preset-category > p {
 						margin-bottom: 10px;
 
 						font-size: 20px;
@@ -278,13 +278,7 @@ button:disabled {
 						color: orange;
 					}
 
-
-					.preset-label {
-						margin-left: 10px;
-					}
-
-
-					.preset-canvas {
+					.preset-category > canvas {
 						margin: 20px;
 						cursor: pointer;
 					}
@@ -302,7 +296,7 @@ button:disabled {
 			font-size: 35px;
 
 			background-color: #d83422;
-			
+
 			cursor: pointer;
 		}
 

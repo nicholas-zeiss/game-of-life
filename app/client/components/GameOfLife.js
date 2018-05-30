@@ -1,7 +1,7 @@
 /**
  *
  *	This is the root component of this app. It holds the instance of the Life class which models our game of life state (a 2d array
- *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update the model as necessary. It has subcomponents View and 
+ *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update the model as necessary. It has subcomponents View and
  *	Controls, which render the game and handle user input.
  *
 **/
@@ -41,47 +41,45 @@ class GameOfLife extends React.Component {
 	}
 
 
-	// as a window resize changes the size of our canvas must change
+	// As a window resize changes the size of our canvas must change
 	componentDidMount() {
-		const setCanvasSize = () => this.setState({ 
-			canvasWidth: this.canvasContainer.clientWidth 
+		const setCanvasSize = () => this.setState({
+			canvasWidth: this.canvasContainer.clientWidth
 		});
-		
+
 		window.onresize = setCanvasSize;
 		setCanvasSize();
 	}
 
 
-	// to save computation the glow applied to live cells is only created once in a separate
+	// To save computation the glow applied to live cells is only created once in a separate
 	// undisplayed canvas which must be updated on window resizes
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.canvasWidth != prevState.canvasWidth) {
 			const ctx = this.glowCanvas.getContext('2d');
 			const radius = 4 * this.state.canvasWidth / this.state.cellColumns;
-			
+
 			drawGlow(ctx, radius, colors.gradientStart, colors.gradientStop);
 
-			// now that the glow canvas is drawn we need to force <View/> to redraw
+			// Now that the glow canvas is drawn we need to force <View/> to redraw
 			this.forceUpdate();
 		}
 	}
 
 
-	// set an interval and return the id
-	animate = speed => {
-		return setInterval(() => {
-			// updateBoard will return false if no living cells remain
-			if (!this.state.life.updateBoard()) {
-				this.stopAnimation();
-			}
+	// Set an interval and return the id
+	animate = speed => setInterval(() => {
+		// UpdateBoard will return false if no living cells remain
+		if (!this.state.life.updateBoard()) {
+			this.stopAnimation();
+		}
 
-			this.forceUpdate();
-		}, speed);
-	}
+		this.forceUpdate();
+	}, speed)
 
 
-	// start and stop take an optional callback to be executed after animation starts/stops
-	startAnimation = cb => {
+	// Start and stop take an optional callback to be executed after animation starts/stops
+	startAnimation = (cb) => {
 		cb = cb || function() {};
 
 		if (!this.state.animating) {
@@ -95,12 +93,12 @@ class GameOfLife extends React.Component {
 	}
 
 
-	stopAnimation = cb => {
+	stopAnimation = (cb) => {
 		cb = cb || function() {};
 
 		if (this.state.animating) {
 			clearInterval(this.state.animateInterval);
-			
+
 			this.setState({
 				animating: false,
 				animateInterval: null
@@ -112,12 +110,12 @@ class GameOfLife extends React.Component {
 
 
 	toggleCells = (cellSet, clearPreset) => {
-		cellSet.forEach(cell => {
-			let [r, c] = cell.split(':');
+		cellSet.forEach((cell) => {
+			const [r, c] = cell.split(':');
 			this.state.life.flipCellState(r, c);
 		});
 
-		// clearPreset is true if user just placed a preset cell structure
+		// ClearPreset is true if user just placed a preset cell structure
 		if (clearPreset) {
 			document.getElementById('app').style.cursor = 'auto';
 			this.setState({ selectedPreset: null });
@@ -135,20 +133,20 @@ class GameOfLife extends React.Component {
 	}
 
 
-	setPreset = cells => {
+	setPreset = (cells) => {
 		document.getElementById('app').style.cursor = 'move';
 		this.setState({ selectedPreset: cells }, this.stopAnimation);
 	}
 
 
-	// inc is +/- 1
-	changeSpeed = inc => {
+	// Inc is +/- 1
+	changeSpeed = (inc) => {
 		if (!this.state.animating) {
 			this.setState({ speed: this.state.speed + inc });
-		
+
 		} else {
 			this.stopAnimation(() => {
-				this.setState({ 
+				this.setState({
 					speed: this.state.speed + inc
 				}, this.startAnimation);
 			});
@@ -160,17 +158,17 @@ class GameOfLife extends React.Component {
 		const cellSize = this.state.canvasWidth / this.state.cellColumns;
 
 		return (
-			<div id='app'>			
+			<div id='app'>
 				<div id='header'>
 					<h1> Conway&apos;s Game of Life </h1>
 					<h4>Use your mouse to toggle one or more cells (game must be paused), or insert a preset structure from the menu on the left.</h4>
 				</div>
-				
+
 				<div id='life-container'>
 					<div id='view-controls-container'>
 						<div>{ `Generation: ${this.state.life.generation}` }</div>
-						
-						<div id='view-container' ref={ el => this.canvasContainer = el }>
+
+						<div ref={ el => this.canvasContainer = el } id='view-container'>
 							<View
 								animating={ this.state.animating }
 								cellSize={ cellSize }
@@ -180,12 +178,12 @@ class GameOfLife extends React.Component {
 								preset={ this.state.selectedPreset }
 								rows={ this.state.cellRows }
 								toggleCells={ this.toggleCells }
-							/> 
+							/>
 						</div>
-						
+
 						<Controls
-							animating={ this.state.animating } 
-							changeSpeed={ this.changeSpeed } 
+							animating={ this.state.animating }
+							changeSpeed={ this.changeSpeed }
 							clear={ this.clear }
 							speed={ this.state.speed }
 							startAnimation={ this.startAnimation }
@@ -193,17 +191,17 @@ class GameOfLife extends React.Component {
 						/>
 					</div>
 				</div>
-				
-				<Selector select={ this.setPreset }/>
+
+				<Selector select={ this.setPreset } />
 
 				<canvas
-					height={ 8 * cellSize }
 					ref={ canvas => this.glowCanvas = canvas }
+					height={ 8 * cellSize }
 					style={{ display: 'none', height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
 					width={ 8 * cellSize }
 				/>
 			</div>
-		);	
+		);
 	}
 }
 

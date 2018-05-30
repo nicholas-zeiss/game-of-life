@@ -31,7 +31,7 @@ class Life {
 	}
 
 
-	// updates board and returns if any live cells remain so that we know
+	// Updates board and returns if any live cells remain so that we know
 	// to stop running simulation
 	updateBoard() {
 		const newBoard = emptyBoard(this.width, this.height);
@@ -66,7 +66,7 @@ class Life {
 		let count = 0;
 
 		for (let r = -1; r < 2; r++) {
-			for (let c = - 1; c < 2; c++) {
+			for (let c = -1; c < 2; c++) {
 				if (r == 0 && c == 0) continue;
 
 				const nRow = wrap(row + r, this.height);

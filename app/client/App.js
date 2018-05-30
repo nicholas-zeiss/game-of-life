@@ -4,7 +4,6 @@
  *
 **/
 
-import React from 'react';
 import { hot } from 'react-hot-loader';
 
 import GameOfLife from './components/GameOfLife';

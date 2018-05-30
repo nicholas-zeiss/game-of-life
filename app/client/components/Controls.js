@@ -4,39 +4,64 @@
  *
 **/
 
+
+import PropTypes from 'prop-types';
 import React from 'react';
 
 
-const Controls = props => {
-	const toggleAnimation = () => {
-		props.animating ? props.stopAnimation() : props.startAnimation();
+const CtrlButton = props => (
+	<button disabled={ props.disabled } onClick={ props.cb } type='button'>
+		{ props.text }
+	</button>
+);
+
+CtrlButton.defaultProps = {
+	disabled: false
+};
+
+CtrlButton.propTypes = {
+	cb: PropTypes.func.isRequired,
+	disabled: PropTypes.bool,
+	text: PropTypes.string.isRequired
+};
+
+
+class Controls extends React.PureComponent {
+
+	toggleAnimation = () => {
+		this.props.animating ? this.props.stopAnimation() : this.props.startAnimation();
 	};
 
-	const speed = [ 'Slow', 'Medium', 'Fast' ][props.speed];
+	decSpeed = () => this.props.changeSpeed(-1)
 
-	return  (
-		<div id='controls-container'>	
-			<button onClick={ toggleAnimation } type='button'>
-				{ props.animating ? 'Pause' : 'Start' }
-			</button>
+	incSpeed = () => this.props.changeSpeed(1)
 
-			<div id='speed'>
-				<button disabled={ props.speed == 0 } onClick={ props.changeSpeed.bind(null, -1) }>
-					&#8810;
-				</button>
 
-				<div>{ speed }</div>
+	render() {
+		return  (
+			<div id='controls-container'>
+				<CtrlButton cb={ this.toggleAnimation } text={ this.props.animating ? 'Pause' : 'Start' } />
 
-				<button disabled={ props.speed == 2 } onClick={ props.changeSpeed.bind(null, 1) }>
-					&#8811;
-				</button>
+				<div id='speed'>
+					<CtrlButton cb={ this.decSpeed } disabled={ !this.props.speed } text='&#8810;' />
+					<div>{ [ 'Slow', 'Medium', 'Fast' ][this.props.speed] }</div>
+					<CtrlButton cb={ this.incSpeed } disabled={ this.props.speed === 2 } text='&#8811;' />
+				</div>
+
+				<CtrlButton cb={ this.props.clear } text='Clear Board' />
 			</div>
-			
-			<button id='clear' onClick={ props.clear }>
-				Clear Board
-			</button>
-		</div>
-	);
+		);
+	}
+}
+
+
+Controls.propTypes = {
+	animating: PropTypes.bool.isRequired,
+	changeSpeed: PropTypes.func.isRequired,
+	clear: PropTypes.func.isRequired,
+	speed: PropTypes.number.isRequired,
+	startAnimation: PropTypes.func.isRequired,
+	stopAnimation: PropTypes.func.isRequired
 };
 
 
