@@ -8,26 +8,46 @@
 
 
 const emptyBoard = (width, height) => (
-	new Array(height)
-		.fill(1)
-		.map(() => (
-			new Array(width)
-				.fill(0)
-		))
+	new Array(height).fill(1).map(() => new Array(width).fill(false))
 );
+
+
+export const shallowComp = (a, b) => {
+	if (a.length !== b.length || a[0].length !== b[0].length) {
+		return false;
+	}
+
+	return a.every((aRow, i) => (
+		aRow.every((aCell, j) => aCell === b[i][j])
+	));
+};
+
+
+const wrapIndex = (index, length) => {
+	if (index < 0) {
+		return length - 1;
+	} else if (index === length) {
+		return 0;
+	}
+	return index;
+};
 
 
 class Life {
 	constructor(width, height) {
-		this.board = emptyBoard(width, height);
+		this._board = emptyBoard(width, height);
 		this.generation = 0;
 		this.height = height;
 		this.width = width;
 	}
 
+	get board() {
+		return this._board.map(row => [...row]);
+	}
+
 
 	flipCellState(row, col) {
-		this.board[row][col] = this.board[row][col] ? 0 : 1;
+		this._board[row][col] = !this._board[row][col];
 	}
 
 
@@ -35,6 +55,8 @@ class Life {
 	// to stop running simulation
 	updateBoard() {
 		const newBoard = emptyBoard(this.width, this.height);
+
+		let change = 0;
 		let anyAlive = false;
 
 		for (let r = 0; r < this.height; r++) {
@@ -42,23 +64,24 @@ class Life {
 				const count = this.countLiveNeighbors(r, c);
 
 				if (count < 2) {
-					newBoard[r][c] = 0;
-				} else if (count == 2) {
-					newBoard[r][c] = this.board[r][c];
-					anyAlive = !!newBoard[r][c] || anyAlive;
-				} else if (count == 3) {
-					newBoard[r][c] = 1;
-					anyAlive = true;
+					newBoard[r][c] = false;
+				} else if (count === 2) {
+					newBoard[r][c] = this._board[r][c];
+				} else if (count === 3) {
+					newBoard[r][c] = true;
 				} else {
-					newBoard[r][c] = 0;
+					newBoard[r][c] = false;
 				}
+
+				anyAlive = anyAlive || newBoard[r][c];
+				change = change || newBoard[r][c] !== this._board[r][c];
 			}
 		}
 
 		this.generation++;
-		this.board = newBoard;
+		this._board = newBoard;
 
-		return anyAlive;
+		return { anyAlive, change };
 	}
 
 
@@ -67,38 +90,22 @@ class Life {
 
 		for (let r = -1; r < 2; r++) {
 			for (let c = -1; c < 2; c++) {
-				if (r == 0 && c == 0) continue;
+				if (r === 0 && c === 0) continue;
 
-				const nRow = wrap(row + r, this.height);
-				const nCol = wrap(col + c, this.width);
+				const nRow = wrapIndex(row + r, this.height);
+				const nCol = wrapIndex(col + c, this.width);
 
-				this.board[nRow][nCol] ? count++ : null;
+				this._board[nRow][nCol] ? count++ : null;
 			}
 		}
 
 		return count;
-
-		function wrap(index, length) {
-			if (index == -1) {
-				return length - 1;
-			} else if (index == length) {
-				return 0;
-			}
-			return index;
-		}
 	}
 
 
 	clear() {
-		this.board = emptyBoard(this.width, this.height);
+		this._board = emptyBoard(this.width, this.height);
 		this.generation = 0;
-	}
-
-
-	toString() {
-		return this.board
-			.map(row => row.join(' '))
-			.join('\n');
 	}
 }
 

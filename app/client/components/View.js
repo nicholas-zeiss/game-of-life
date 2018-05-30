@@ -6,6 +6,7 @@
 **/
 
 
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { addGlow, drawCell } from '../utils/cells';
@@ -13,8 +14,22 @@ import colors from '../utils/colors';
 
 
 class View extends React.Component {
+	static propTypes = {
+		animating: PropTypes.bool.isRequired,
+		cellSize: PropTypes.number.isRequired,
+		cells: PropTypes.array.isRequired,
+		glow: PropTypes.any,
+		preset: PropTypes.array,
+		toggleCells: PropTypes.func.isRequired
+	};
+
+
 	constructor(props) {
 		super(props);
+
+		this.boardHeight = props.cells.length;
+		this.boardWidth = props.cells[0].length;
+		this.canvasRef = React.createRef();
 
 		this.state = {
 			mouseCell: null,			// Cell mouse is over, ie [ int r, int c ]
@@ -22,12 +37,27 @@ class View extends React.Component {
 		};
 	}
 
-	componentWillReceiveProps() {
+	UNSAFE_componentWillReceiveProps() {
 		this.setState({ selectedCells: new Set() });
 	}
 
+
+	shouldComponentUpdate(nextProps, nextState) {
+		if (nextProps.cells !== this.props.cells) {
+			return true;
+		} else if (nextProps.cellSize !== this.props.cellSize) {
+			return true;
+		} else if (nextProps.preset && nextState.mouseCell !== this.state.mouseCell) {
+			return true;
+		}
+
+		return false;
+	}
+
+
 	// Draw the board
 	componentDidUpdate() {
+		this.ctx = this.canvasRef.current.getContext('2d');
 		const cellSize = this.props.cellSize;
 		const glow = this.props.glow;
 
@@ -47,12 +77,12 @@ class View extends React.Component {
 	//-------------------------------------------------------------
 
 	validCell(row, col) {
-		return this.props.cells[row] && this.props.cells[row][col] != undefined;
+		return this.props.cells[row] && this.props.cells[row][col] !== undefined;
 	}
 
 	drawBackground() {
-		const boardWidth = this.props.cellSize * this.props.columns;
-		const boardHeight = this.props.cellSize * this.props.rows;
+		const boardWidth = this.props.cellSize * this.boardWidth;
+		const boardHeight = this.props.cellSize * this.boardHeight;
 
 		this.ctx.fillStyle = colors.cellBorder;
 		this.ctx.fillRect(0, 0, boardWidth, boardHeight);
@@ -153,13 +183,13 @@ class View extends React.Component {
 
 		let button = 0;
 
-		if (e.buttons != undefined) {
+		if (e.buttons !== undefined) {
 			button = e.buttons;
-		} else if (e.nativeEvent.which != undefined) {
+		} else if (e.nativeEvent.which !== undefined) {
 			button = e.nativeEvent.which;
 		}
 
-		if (button == 1 && !this.props.preset) {
+		if (button === 1 && !this.props.preset) {
 			if (!this.state.selectedCells.has(row + ':' + col)) {
 				this.toggleCell(row, col);
 				this.state.selectedCells.add(row + ':' + col);
@@ -173,14 +203,13 @@ class View extends React.Component {
 	render() {
 		return (
 			<canvas
-				ref={ canvas => canvas ? this.ctx = canvas.getContext('2d') : null }
-				height={ this.props.cellSize * this.props.rows }
+				ref={ this.canvasRef }
+				height={ this.props.cellSize * this.boardHeight }
 				id='life-canvas'
 				onClick={ this.handleClick }
-				onDrag={ e => console.log(e.buttons, e.nativeEvent.offsetX, e.nativeEvent.offsetY) }
 				onMouseLeave={ this.handleMouseLeave }
 				onMouseMove={ this.handleMouseMove }
-				width={ this.props.cellSize * this.props.columns }
+				width={ this.props.cellSize * this.boardWidth }
 			/>
 		);
 	}
