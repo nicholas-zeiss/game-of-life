@@ -11,18 +11,6 @@ const emptyBoard = (width, height) => (
 	new Array(height).fill(1).map(() => new Array(width).fill(false))
 );
 
-
-export const shallowComp = (a, b) => {
-	if (a.length !== b.length || a[0].length !== b[0].length) {
-		return false;
-	}
-
-	return a.every((aRow, i) => (
-		aRow.every((aCell, j) => aCell === b[i][j])
-	));
-};
-
-
 const wrapIndex = (index, length) => {
 	if (index < 0) {
 		return length - 1;

@@ -20,10 +20,13 @@ import speeds from '../utils/speeds';
 
 
 class GameOfLife extends React.Component {
+	static gameHeight = 35;
+	static gameWidth = 80;
+
 	constructor(props) {
 		super(props);
 
-		const game = new Life(80, 35);
+		const game = new Life(GameOfLife.gameWidth, GameOfLife.gameHeight);
 
 		this.state = {
 			animating: false,
@@ -40,6 +43,8 @@ class GameOfLife extends React.Component {
 		this.state.life.flipCellState(16, 35);
 		this.state.life.flipCellState(16, 36);
 		this.state.life.flipCellState(17, 36);
+
+		this.state.cells = this.state.life.board;
 	}
 
 
@@ -54,16 +59,12 @@ class GameOfLife extends React.Component {
 	}
 
 
-	// To save computation the glow applied to live cells is only created once in a separate
-	// undisplayed canvas which must be updated on window resizes
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.canvasWidth !== prevState.canvasWidth) {
 			const ctx = this.glowCanvas.getContext('2d');
-			const radius = 4 * this.state.canvasWidth / 80;
+			const radius = 4 * this.state.canvasWidth / GameOfLife.gameWidth;
 
 			drawGlow(ctx, radius, colors.gradientStart, colors.gradientStop);
-
-			// Now that the glow canvas is drawn we need to force <View/> to redraw
 			this.forceUpdate();
 		}
 	}
@@ -119,6 +120,11 @@ class GameOfLife extends React.Component {
 
 
 	toggleCells = (cellSet, clearPreset) => {
+		console.log(cellSet)
+		if (!cellSet.size && !cellSet.length) {
+			return;
+		}
+		console.log(cellSet)
 		cellSet.forEach((cell) => {
 			const [r, c] = cell.split(':');
 			this.state.life.flipCellState(r, c);
@@ -168,7 +174,7 @@ class GameOfLife extends React.Component {
 
 
 	render() {
-		const cellSize = this.state.canvasWidth / 80;
+		const cellSize = this.state.canvasWidth / GameOfLife.gameWidth;
 
 		return (
 			<div id='app'>
