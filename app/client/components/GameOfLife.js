@@ -83,8 +83,6 @@ class GameOfLife extends React.Component {
 
 			if (change) {
 				this.setState(state => ({ cells: state.life.board }));
-			} else {
-				this.forceUpdate();
 			}
 		}, speed)
 	);
@@ -186,8 +184,6 @@ class GameOfLife extends React.Component {
 
 					<div className={ styles.lifeContainer }>
 						<div className={ styles.viewControlsContainer }>
-							<div>{ `Generation: ${this.state.life.generation}` }</div>
-
 							<div ref={ this.gameContainer } className={ styles.viewContainer }>
 								<View
 									animating={ this.state.animating }

@@ -6,23 +6,15 @@ body {
 	font-weight: 400;
 	text-shadow: 1px 1px 1px #3f3f3f;
 	color: #ececec;
-	background-color: #96a5dc;
+	background-color: #d5daef;
   user-select: none;
 }
 
 
 button {
 	margin: 0;
+	outline: none;
 	padding: 0;
-
-	font-family: 'Open Sans', sans-serif;
-	font-weight: 400;
-	text-shadow: 1px 1px 1px #3f3f3f;
-
-	color: #e2e0e0;
-	background-color: #d83422;
-
-	cursor: pointer;
 }
 
 
@@ -44,12 +36,12 @@ button {
 		width: 100vw;
 		/*height: 100px;*/
 
-		box-shadow: 0 0 20px 1px black;
+		box-shadow: 0 0 2px 1px #000000ad;
 		/*display: flex;*/
 		/*flex-direction: row;*/
 		/*align-items: center;*/
 		/*justify-content: space-between;*/
-		background-color: #252c54;
+		background-color: #466bd6;
 	}
 
 

@@ -29,56 +29,47 @@ import styles from '../styles/controls.css';
 
 
 class Controls extends React.PureComponent {
+	static propTypes = {
+		animating: PropTypes.bool.isRequired,
+		changeSpeed: PropTypes.func.isRequired,
+		clear: PropTypes.func.isRequired,
+		speed: PropTypes.number.isRequired,
+		startAnimation: PropTypes.func.isRequired,
+		stopAnimation: PropTypes.func.isRequired
+	};
+
 
 	toggleAnimation = () => {
 		this.props.animating ? this.props.stopAnimation() : this.props.startAnimation();
 	};
 
+
 	decSpeed = () => this.props.changeSpeed(-1)
 
+
 	incSpeed = () => this.props.changeSpeed(1)
+
 
 	render() {
 		return  (
 			<div className={ styles.controlsContainer }>
-				<input onClick={ this.toggleAnimation } value={ this.props.animating ? 'Pause' : 'Start' }  type='button'/>
+				<div className={ styles.playBackContainer }>
+					<button onClick={ this.toggleAnimation } type='button'>
+						<span>{ '\u25B6' }</span><span>{ '\u258E' }</span>
+					</button>
 
-				<div className={ styles.sliderContainer }>
-					<input type='range' onChange={ event => console.log(event.target.value) } className={ styles.slider }/>
+					<button onClick={ this.props.clear } type='button'>
+						{ 'Reset' }
+					</button>
 				</div>
 
-				<input onClick={ this.props.clear } value='Reset' type='button'/>
+				<div className={ styles.sliderContainer }>
+					<input className={ styles.slider } type='range' />
+				</div>
 			</div>
 		);
 	}
-
-
-	// render() {
-	// 	return  (
-	// 		<div id='controls-container'>
-	// 			<input onClick={ this.toggleAnimation } value={ this.props.animating ? 'Pause' : 'Start' }  type='button'/>
-
-	// 			<div id='speed'>
-	// 				<input onClick={ this.decSpeed } disabled={ !this.props.speed } value='&#8810;'  type='button'/>
-	// 				<div>{ [ 'Slow', 'Medium', 'Fast' ][this.props.speed] }</div>
-	// 				<input onClick={ this.incSpeed } disabled={ this.props.speed === 2 } value='&#8811;' type='button' />
-	// 			</div>
-
-	// 			<input onClick={ this.props.clear } value='Clear Board' type='button'/>
-	// 		</div>
-	// 	);
-	// }
 }
-
-
-Controls.propTypes = {
-	animating: PropTypes.bool.isRequired,
-	changeSpeed: PropTypes.func.isRequired,
-	clear: PropTypes.func.isRequired,
-	speed: PropTypes.number.isRequired,
-	startAnimation: PropTypes.func.isRequired,
-	stopAnimation: PropTypes.func.isRequired
-};
 
 
 export default Controls;

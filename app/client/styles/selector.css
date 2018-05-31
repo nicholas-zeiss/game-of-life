@@ -1,0 +1,85 @@
+
+
+	.selectorContainer {
+		position: absolute;
+		left: -405px;
+		top: 15vh;
+		width: 450px;
+		height: 70vh;
+
+		display: flex;
+		align-items: center;
+
+		background-color: transparent;
+		transition: left 500ms ease-out;
+	}
+
+
+		.selectorContent {
+			padding: 10px 10px 20px;
+			border: 1px solid rgba(0, 0, 0, .5);
+			border-left: none;
+			border-radius: 0 5px 5px 0;
+			box-shadow: 0 0 20px 1px black;
+
+			background-color: #d83422;
+		}
+
+
+			.selectorContent > p {
+				font-size: 25px;
+				font-weight: 700;
+				text-align: center;
+			}
+
+
+			.selectorContent > div {
+				height: 60vh;
+
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				overflow: auto;
+
+				margin-top: 15px;
+
+				background-color: #040404;
+			}
+
+
+				.presetCategory {
+					margin: 10px 15px;
+				}
+
+
+					.presetCategory > p {
+						margin-bottom: 10px;
+
+						font-size: 20px;
+						text-decoration: underline;
+
+						color: orange;
+					}
+
+					.presetCategory > canvas {
+						margin: 20px;
+						cursor: pointer;
+					}
+
+
+		.selectorToggle {
+			z-index: 2;
+
+			padding: 0 5px 2px 5px;
+			border: 1px solid rgba(0, 0, 0, .5);
+			border-left: none;
+			border-radius: 0 5px 5px 0;
+			margin-left: -1px;
+
+			font-size: 35px;
+
+			background-color: #d83422;
+
+			cursor: pointer;
+		}
+

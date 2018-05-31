@@ -6,10 +6,10 @@
 
 
 export const COLORS = {
-	cellBorder: '#484848',
+	cellBorder: '#313131',
 	deadCell: '#040404',
 	gradientStart: 'rgba(67, 211, 0, 0)',
-	gradientStop: 'rgba(67, 211, 0, .1)',
+	gradientStop: 'rgba(67, 211, 0, .08)',
 	liveCell: '#449e1b'
 };
 

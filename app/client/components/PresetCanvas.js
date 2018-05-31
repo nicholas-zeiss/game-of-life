@@ -41,6 +41,7 @@ class Preset extends React.PureComponent {
 					ref={ this.canvasRef }
 					height={ cellSize *	this.props.height }
 					onClick={ this.selectCells }
+					style={{ cursor: 'pointer' }}
 					width={ cellSize *this.props.width }
 				/>
 			</React.Fragment>
