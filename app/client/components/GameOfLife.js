@@ -8,6 +8,8 @@
 
 
 import React from 'react';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import Controls from './Controls';
 import View from './View';
@@ -17,7 +19,6 @@ import styles from '../styles/styles.css';
 
 import { COLORS, drawGlow } from '../utils/cells';
 import Life from '../utils/Life';
-import speeds from '../utils/speeds';
 
 
 class GameOfLife extends React.Component {
@@ -30,28 +31,32 @@ class GameOfLife extends React.Component {
 
 		const game = new Life(GameOfLife.gameWidth, GameOfLife.gameHeight);
 
-		game.flipCellState(15, 36);
-		game.flipCellState(15, 37);
-		game.flipCellState(16, 35);
-		game.flipCellState(16, 36);
-		game.flipCellState(17, 36);
-
 		this.state = {
 			animating: false,
 			animateInterval: null,
 			gameWidth: 800,
 			cells: game.board,
 			life: game,
-			speed: 1,
+			speed: 150,
 			selectedPreset: null
 		};
 
+
 		this.gameContainer = React.createRef();
 		this.glowCanvas = React.createRef();
+
+		this.speedSubject = new Subject();
 	}
 
 
 	componentDidMount() {
+		this.speedSubject
+			.pipe(
+				distinctUntilChanged(),
+				// debounceTime(10)
+			)
+			.subscribe(this.changeSpeed);
+
 		const resizeCanvas = () => {
 			this.setState({ gameWidth: this.gameContainer.current.clientWidth });
 		};
@@ -73,7 +78,7 @@ class GameOfLife extends React.Component {
 	}
 
 
-	animate = speed => (
+	animate = () => (
 		setInterval(() => {
 			const { anyAlive, change } = this.state.life.updateBoard();
 
@@ -84,18 +89,17 @@ class GameOfLife extends React.Component {
 			if (change) {
 				this.setState(state => ({ cells: state.life.board }));
 			}
-		}, speed)
+		}, this.state.speed)
 	);
 
 
 	startAnimation = (cb) => {
 		cb = cb ? cb : () => {};
-		const speed = speeds[this.state.speed];
 
 		if (!this.state.animating) {
 			this.setState({
 				animating: true,
-				animateInterval: this.animate(speed)
+				animateInterval: this.animate()
 			}, cb);
 		} else {
 			cb();
@@ -154,13 +158,11 @@ class GameOfLife extends React.Component {
 	}
 
 
-	// Inc is +/- 1
-	changeSpeed = (inc) => {
-		const nextSpeed = this.state.speed + inc;
+	changeSpeed = (percent) => {
+		const nextSpeed = 10 + percent * 300;
 
 		if (!this.state.animating) {
 			this.setState({ speed: nextSpeed });
-
 		} else {
 			this.stopAnimation(() => {
 				this.setState({
@@ -197,9 +199,8 @@ class GameOfLife extends React.Component {
 
 							<Controls
 								animating={ this.state.animating }
-								changeSpeed={ this.changeSpeed }
 								clear={ this.clear }
-								speed={ this.state.speed }
+								speedSubject={ this.speedSubject }
 								startAnimation={ this.startAnimation }
 								stopAnimation={ this.stopAnimation }
 							/>

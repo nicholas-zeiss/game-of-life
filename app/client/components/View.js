@@ -13,7 +13,7 @@ import styles from '../styles/gameView.css';
 import { addGlow, COLORS, drawCell } from '../utils/cells';
 
 
-class View extends React.Component {
+class View extends React.PureComponent {
 	static propTypes = {
 		animating: PropTypes.bool.isRequired,
 		cellSize: PropTypes.number.isRequired,
@@ -192,8 +192,8 @@ class View extends React.Component {
 		return (
 			<canvas
 				ref={ this.canvasRef }
-				height={ this.props.cellSize * this.boardHeight }
 				className={ styles.lifeCanvas }
+				height={ this.props.cellSize * this.boardHeight }
 				onClick={ this.mouseHandler }
 				onMouseDown={ this.mouseHandler }
 				onMouseEnter={ this.handleEnter }

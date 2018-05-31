@@ -27,7 +27,7 @@ export const drawCell = (ctx, alive, row, col, size) => {
 	const y = row * size;
 
 	ctx.fillStyle = alive ? COLORS.liveCell : COLORS.deadCell;
-	ctx.fillRect(x + 1, y + 1, size - 1, size - 1);			// +/- 1 preserves borders between cells
+	ctx.fillRect(x + .5, y + .5, size - .5, size - .5);			// +/- 1 preserves borders between cells
 };
 
 

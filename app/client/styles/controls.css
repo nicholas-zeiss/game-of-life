@@ -19,7 +19,7 @@ input:active, input:focus {
 .controlsContainer button {
   font-weight: 400;
   font-size: 24px;
-  border: 1px solid #312d2d;
+  border: 1px solid #901b10;
   color: #1f1e1e;
   padding: 0 10px 1px;
   cursor: pointer;
@@ -124,6 +124,10 @@ button:last-child {
   background: #828282;
 }
 
+
+.slider:disabled::-webkit-slider-runnable-track {
+  background: black;
+}
 
 
 .slider::-webkit-slider-thumb {

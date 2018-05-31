@@ -54,7 +54,7 @@ button {
 			font-weight: 600;
 			text-align: left;
 			font-size: 30px;
-			text-shadow: 1px 1px 2px black;
+			text-shadow: 1px 1px 1px #0b256d;
 		}
 
 
@@ -70,7 +70,7 @@ button {
 			text-align: right;
 			text-align-last: right;
 			font-size: 16px;
-			text-shadow: 1px 1px 2px black;
+			text-shadow: 1px 1px 1px #0b256d;
 		}
 
 

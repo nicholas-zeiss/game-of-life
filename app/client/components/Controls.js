@@ -7,33 +7,16 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Subject } from 'rxjs';
 
 import styles from '../styles/controls.css';
-
-
-// const CtrlButton = props => (
-// 	// <button disabled={ props.disabled } onClick={ props.cb } type='button'>
-// 	// 	{ props.text }
-// 	// </button>
-// );
-
-// CtrlButton.defaultProps = {
-// 	disabled: false
-// };
-
-// CtrlButton.propTypes = {
-// 	cb: PropTypes.func.isRequired,
-// 	disabled: PropTypes.bool,
-// 	text: PropTypes.string.isRequired
-// };
 
 
 class Controls extends React.PureComponent {
 	static propTypes = {
 		animating: PropTypes.bool.isRequired,
-		changeSpeed: PropTypes.func.isRequired,
 		clear: PropTypes.func.isRequired,
-		speed: PropTypes.number.isRequired,
+		speedSubject: PropTypes.any.isRequired,
 		startAnimation: PropTypes.func.isRequired,
 		stopAnimation: PropTypes.func.isRequired
 	};
@@ -44,10 +27,9 @@ class Controls extends React.PureComponent {
 	};
 
 
-	decSpeed = () => this.props.changeSpeed(-1)
-
-
-	incSpeed = () => this.props.changeSpeed(1)
+	updateSpeed = (event) => {
+		this.props.speedSubject.next(1 - (event.target.value / 100));
+	}
 
 
 	render() {
@@ -64,7 +46,7 @@ class Controls extends React.PureComponent {
 				</div>
 
 				<div className={ styles.sliderContainer }>
-					<input className={ styles.slider } type='range' />
+					<input className={ styles.slider }  max={ 100 } min={ 0 } onInput={ this.updateSpeed } type='range' />
 				</div>
 			</div>
 		);

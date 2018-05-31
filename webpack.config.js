@@ -1,5 +1,6 @@
 
 
+const rxPaths = require('rxjs/_esm5/path-mapping');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
@@ -17,6 +18,9 @@ module.exports = {
 		contentBase: './dist',
 		hot: true,
 		port: 8080
+	},
+	resolve: {
+		alias: rxPaths()
 	},
 	module: {
 		rules: [
