@@ -38,21 +38,9 @@ class View extends React.Component {
 		};
 	}
 
+
 	UNSAFE_componentWillReceiveProps() {
 		this.setState({ selectedCells: new Set() });
-	}
-
-
-	shouldComponentUpdate(nextProps, nextState) {
-		if (nextProps.cells !== this.props.cells) {
-			return true;
-		} else if (nextProps.cellSize !== this.props.cellSize) {
-			return true;
-		} else if (nextProps.preset && nextState.mouseCell !== this.state.mouseCell) {
-			return true;
-		}
-
-		return false;
 	}
 
 
@@ -62,6 +50,7 @@ class View extends React.Component {
 		const glow = this.props.glow;
 
 		this.drawBackground();
+
 		this.loopOverCells((alive, r, c) => drawCell(this.ctx, alive, r, c, cellSize));
 		this.loopOverCells((alive, r, c) => alive ? addGlow(this.ctx, glow, r, c, cellSize) : null);
 
@@ -90,6 +79,7 @@ class View extends React.Component {
 			row.forEach((cell, c) => cb(cell, r, c));
 		});
 	}
+
 
 	// Draw a preset structure under the mouse position
 	drawPresetCells = () => {

@@ -8,7 +8,7 @@ const webpack = require('webpack');
 module.exports = {
 	mode: 'development',
 	entry: './app/client/Main.js',
-	devtool: 'eval',
+	devtool: 'eval-source-map',
 	output: {
 		filename: 'bundle.js',
 		path: path.resolve(__dirname, 'dist')

@@ -28,41 +28,40 @@ class GameOfLife extends React.Component {
 
 		const game = new Life(GameOfLife.gameWidth, GameOfLife.gameHeight);
 
+		game.flipCellState(15, 36);
+		game.flipCellState(15, 37);
+		game.flipCellState(16, 35);
+		game.flipCellState(16, 36);
+		game.flipCellState(17, 36);
+
 		this.state = {
 			animating: false,
 			animateInterval: null,
-			canvasWidth: 800,
+			gameWidth: 800,
 			cells: game.board,
 			life: game,
 			speed: 1,								// 0: slow, 1: medium, 2: fast
 			selectedPreset: null
 		};
 
-		this.state.life.flipCellState(15, 36);
-		this.state.life.flipCellState(15, 37);
-		this.state.life.flipCellState(16, 35);
-		this.state.life.flipCellState(16, 36);
-		this.state.life.flipCellState(17, 36);
-
-		this.state.cells = this.state.life.board;
+		this.gameContainer = React.createRef();
+		this.glowCanvas = React.createRef();
 	}
 
 
-	// As a window resize changes the size of our canvas must change
 	componentDidMount() {
-		const setCanvasSize = () => this.setState({
-			canvasWidth: this.canvasContainer.clientWidth
-		});
+		const resizeCanvas = () => {
+			this.setState({ gameWidth: this.gameContainer.current.clientWidth });
+		};
 
-		window.onresize = setCanvasSize;
-		setCanvasSize();
+		window.onresize = resizeCanvas;
+		resizeCanvas();
 	}
-
 
 	componentDidUpdate(prevProps, prevState) {
-		if (this.state.canvasWidth !== prevState.canvasWidth) {
-			const ctx = this.glowCanvas.getContext('2d');
-			const radius = 4 * this.state.canvasWidth / GameOfLife.gameWidth;
+		if (this.state.gameWidth !== prevState.gameWidth) {
+			const ctx = this.glowCanvas.current.getContext('2d');
+			const radius = 4 * this.state.gameWidth / GameOfLife.gameWidth;
 
 			drawGlow(ctx, radius, colors.gradientStart, colors.gradientStop);
 			this.forceUpdate();
@@ -70,9 +69,7 @@ class GameOfLife extends React.Component {
 	}
 
 
-	// Set an interval and return the id
 	animate = speed => setInterval(() => {
-		// UpdateBoard will return false if no living cells remain
 		const { anyAlive, change } = this.state.life.updateBoard();
 
 		if (!anyAlive) {
@@ -80,7 +77,7 @@ class GameOfLife extends React.Component {
 		}
 
 		if (change) {
-			this.setState((state) => ({ cells: state.life.board }));
+			this.setState(state => ({ cells: state.life.board }));
 		} else {
 			this.forceUpdate();
 		}
@@ -120,11 +117,10 @@ class GameOfLife extends React.Component {
 
 
 	toggleCells = (cellSet, clearPreset) => {
-		console.log(cellSet)
 		if (!cellSet.size && !cellSet.length) {
 			return;
 		}
-		console.log(cellSet)
+
 		cellSet.forEach((cell) => {
 			const [r, c] = cell.split(':');
 			this.state.life.flipCellState(r, c);
@@ -138,14 +134,14 @@ class GameOfLife extends React.Component {
 			update.selectedPreset = null;
 		}
 
-		this.setState((state) => Object.assign(update, { cells: state.life.board }));
+		this.setState(state => Object.assign(update, { cells: state.life.board }));
 	}
 
 
 	clear = () => {
 		this.stopAnimation(() => {
 			this.state.life.clear();
-			this.setState((state) => ({ cells: state.life.board }));
+			this.setState(state => ({ cells: state.life.board }));
 		});
 	}
 
@@ -174,7 +170,7 @@ class GameOfLife extends React.Component {
 
 
 	render() {
-		const cellSize = this.state.canvasWidth / GameOfLife.gameWidth;
+		const cellSize = this.state.gameWidth / GameOfLife.gameWidth;
 
 		return (
 			<div id='app'>
@@ -187,12 +183,12 @@ class GameOfLife extends React.Component {
 					<div id='view-controls-container'>
 						<div>{ `Generation: ${this.state.life.generation}` }</div>
 
-						<div ref={ el => this.canvasContainer = el } id='view-container'>
+						<div ref={ this.gameContainer } id='view-container'>
 							<View
 								animating={ this.state.animating }
 								cellSize={ cellSize }
 								cells={ this.state.cells }
-								glow={ this.glowCanvas }
+								glow={ this.glowCanvas.current }
 								preset={ this.state.selectedPreset }
 								toggleCells={ this.toggleCells }
 							/>
@@ -212,10 +208,10 @@ class GameOfLife extends React.Component {
 				<Selector select={ this.setPreset } />
 
 				<canvas
-					ref={ canvas => this.glowCanvas = canvas }
+					ref={ this.glowCanvas }
 					height={ 8 * cellSize }
-					style={{ display: 'none', height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
 					width={ 8 * cellSize }
+					style={{ display: 'none', height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
 				/>
 			</div>
 		);
