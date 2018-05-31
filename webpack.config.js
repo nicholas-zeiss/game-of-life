@@ -32,37 +32,40 @@ module.exports = {
 				options: {
 					plugins: [
 						'transform-class-properties',
-				  	'transform-object-rest-spread',
-				  	'react-hot-loader/babel'
+						'transform-object-rest-spread',
+						'react-hot-loader/babel'
 					],
 					presets: [
 						'env',
-				  	'react'
+						'react'
 					]
 				}
 			},
 			{
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader'
-          }
-        ]
-      },
-      {
+				test: /\.html$/,
+				use: [
+					{
+						loader: 'html-loader'
+					}
+				]
+			},
+			{
 				test: /\.css$/,
 				use: [
 					'style-loader',
-					'css-loader'
+					{
+						loader: 'css-loader',
+						options: { modules: true }
+					}
 				]
 			}
 		]
 	},
 	plugins: [
-    new HtmlWebPackPlugin({
-      template: 'app/index.html'
-    }),
-    new webpack.HotModuleReplacementPlugin()
-  ]
+		new HtmlWebPackPlugin({
+			template: 'app/index.html'
+		}),
+		new webpack.HotModuleReplacementPlugin()
+	]
 };
 

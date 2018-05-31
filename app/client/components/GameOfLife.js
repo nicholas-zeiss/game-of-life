@@ -13,15 +13,17 @@ import Controls from './Controls';
 import View from './View';
 import Selector from './Selector';
 
-import { drawGlow } from '../utils/cells';
-import colors from '../utils/colors';
+import styles from '../styles/styles.css';
+
+import { COLORS, drawGlow } from '../utils/cells';
 import Life from '../utils/Life';
 import speeds from '../utils/speeds';
 
 
 class GameOfLife extends React.Component {
-	static gameHeight = 35;
+	static gameHeight = 40;
 	static gameWidth = 80;
+
 
 	constructor(props) {
 		super(props);
@@ -40,7 +42,7 @@ class GameOfLife extends React.Component {
 			gameWidth: 800,
 			cells: game.board,
 			life: game,
-			speed: 1,								// 0: slow, 1: medium, 2: fast
+			speed: 1,
 			selectedPreset: null
 		};
 
@@ -58,35 +60,38 @@ class GameOfLife extends React.Component {
 		resizeCanvas();
 	}
 
+
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.gameWidth !== prevState.gameWidth) {
 			const ctx = this.glowCanvas.current.getContext('2d');
 			const radius = 4 * this.state.gameWidth / GameOfLife.gameWidth;
 
-			drawGlow(ctx, radius, colors.gradientStart, colors.gradientStop);
+			drawGlow(ctx, radius, COLORS.gradientStart, COLORS.gradientStop);
+
 			this.forceUpdate();
 		}
 	}
 
 
-	animate = speed => setInterval(() => {
-		const { anyAlive, change } = this.state.life.updateBoard();
+	animate = speed => (
+		setInterval(() => {
+			const { anyAlive, change } = this.state.life.updateBoard();
 
-		if (!anyAlive) {
-			this.stopAnimation();
-		}
+			if (!anyAlive) {
+				this.stopAnimation();
+			}
 
-		if (change) {
-			this.setState(state => ({ cells: state.life.board }));
-		} else {
-			this.forceUpdate();
-		}
-	}, speed)
+			if (change) {
+				this.setState(state => ({ cells: state.life.board }));
+			} else {
+				this.forceUpdate();
+			}
+		}, speed)
+	);
 
 
-	// Start and stop take an optional callback to be executed after animation starts/stops
 	startAnimation = (cb) => {
-		cb = cb || function() {};
+		cb = cb ? cb : () => {};
 		const speed = speeds[this.state.speed];
 
 		if (!this.state.animating) {
@@ -101,7 +106,7 @@ class GameOfLife extends React.Component {
 
 
 	stopAnimation = (cb) => {
-		cb = cb || function() {};
+		cb = cb ? cb : () => {};
 
 		if (this.state.animating) {
 			clearInterval(this.state.animateInterval);
@@ -126,7 +131,6 @@ class GameOfLife extends React.Component {
 			this.state.life.flipCellState(r, c);
 		});
 
-		// ClearPreset is true if user just placed a preset cell structure
 		const update = {};
 
 		if (clearPreset) {
@@ -174,34 +178,36 @@ class GameOfLife extends React.Component {
 
 		return (
 			<div id='app'>
-				<div id='header'>
-					<h1> Conway&apos;s Game of Life </h1>
-					<h4>Use your mouse to toggle one or more cells (game must be paused), or insert a preset structure from the menu on the left.</h4>
-				</div>
+				<div className={ styles.appContainer }>
+					<div className={ styles.header }>
+						<span> Conway&apos;s Game of Life </span>
+						<p>Use your mouse to toggle one or more cells (game must be paused), or insert a preset structure from the menu on the left.</p>
+					</div>
 
-				<div id='life-container'>
-					<div id='view-controls-container'>
-						<div>{ `Generation: ${this.state.life.generation}` }</div>
+					<div className={ styles.lifeContainer }>
+						<div className={ styles.viewControlsContainer }>
+							<div>{ `Generation: ${this.state.life.generation}` }</div>
 
-						<div ref={ this.gameContainer } id='view-container'>
-							<View
+							<div ref={ this.gameContainer } className={ styles.viewContainer }>
+								<View
+									animating={ this.state.animating }
+									cellSize={ cellSize }
+									cells={ this.state.cells }
+									glow={ this.glowCanvas.current }
+									preset={ this.state.selectedPreset }
+									toggleCells={ this.toggleCells }
+								/>
+							</div>
+
+							<Controls
 								animating={ this.state.animating }
-								cellSize={ cellSize }
-								cells={ this.state.cells }
-								glow={ this.glowCanvas.current }
-								preset={ this.state.selectedPreset }
-								toggleCells={ this.toggleCells }
+								changeSpeed={ this.changeSpeed }
+								clear={ this.clear }
+								speed={ this.state.speed }
+								startAnimation={ this.startAnimation }
+								stopAnimation={ this.stopAnimation }
 							/>
 						</div>
-
-						<Controls
-							animating={ this.state.animating }
-							changeSpeed={ this.changeSpeed }
-							clear={ this.clear }
-							speed={ this.state.speed }
-							startAnimation={ this.startAnimation }
-							stopAnimation={ this.stopAnimation }
-						/>
 					</div>
 				</div>
 
@@ -210,8 +216,12 @@ class GameOfLife extends React.Component {
 				<canvas
 					ref={ this.glowCanvas }
 					height={ 8 * cellSize }
+					style={{
+						display: 'none',
+						height: 8 * cellSize + 'px',
+						width: 8 * cellSize + 'px'
+					}}
 					width={ 8 * cellSize }
-					style={{ display: 'none', height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
 				/>
 			</div>
 		);

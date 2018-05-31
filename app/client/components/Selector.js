@@ -11,6 +11,7 @@ import React from 'react';
 
 import PresetCanvas from './PresetCanvas';
 
+import styles from '../styles/selector.css';
 import oscillators from '../utils/oscillators';
 import ships from '../utils/ships';
 import stills from '../utils/stills';
@@ -53,20 +54,20 @@ class Selector extends React.PureComponent {
 		const cntrStyle = this.state.open ? { left: '0px' } : null;
 
 		const presetGroups = presetTypes.map(([ groupName, presets ]) => (
-			<div key={ groupName + '-category' } className='preset-category'>
+			<div key={ groupName + '-category' } className={ styles.presetCategory }>
 				<p>{ groupName }</p>
 				<div>{ presets.map(this.createPresetCanvas) }</div>
 			</div>
 		));
 
 		return (
-			<aside id='selector-container' style={ cntrStyle }>
-				<section id='selector-content'>
+			<aside className={ styles.selectorContainer } style={ cntrStyle }>
+				<section className={ styles.selectorContent }>
 					<p> Useful Patterns </p>
 					<div>{ presetGroups }</div>
 				</section>
 
-				<button  id='selector-toggle' onClick={ this.toggle } type='button'> &#8811; </button>
+				<button  className={ styles.selectorToggle } onClick={ this.toggle } type='button'> &#8811; </button>
 			</aside>
 		);
 	}

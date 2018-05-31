@@ -3,8 +3,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { drawCell } from '../utils/cells';
-import colors from '../utils/colors';
+import { COLORS, drawCell } from '../utils/cells';
 
 
 const cellSize = 10;
@@ -27,7 +26,7 @@ class Preset extends React.PureComponent {
 
 	componentDidMount() {
 		const ctx = this.canvasRef.current.getContext('2d');
-		this.props.cells.forEach(([r, c]) => drawCell(ctx, colors.liveCell, r, c, cellSize));
+		this.props.cells.forEach(([r, c]) => drawCell(ctx, COLORS.liveCell, r, c, cellSize));
 	}
 
 

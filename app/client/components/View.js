@@ -9,8 +9,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { addGlow, drawCell } from '../utils/cells';
-import colors from '../utils/colors';
+import styles from '../styles/gameView.css';
+import { addGlow, COLORS, drawCell } from '../utils/cells';
 
 
 class View extends React.Component {
@@ -69,7 +69,7 @@ class View extends React.Component {
 		const boardWidth = this.props.cellSize * this.boardWidth;
 		const boardHeight = this.props.cellSize * this.boardHeight;
 
-		this.ctx.fillStyle = colors.cellBorder;
+		this.ctx.fillStyle = COLORS.cellBorder;
 		this.ctx.fillRect(0, 0, boardWidth, boardHeight);
 	}
 
@@ -89,7 +89,7 @@ class View extends React.Component {
 
 			// No need to draw if cell is already alive (ie already drawn)
 			if (this.validCell(row, col) && !this.props.cells[row][col]) {
-				drawCell(this.ctx, colors.liveCell, row, col, this.props.cellSize);
+				drawCell(this.ctx, COLORS.liveCell, row, col, this.props.cellSize);
 			}
 		});
 	}
@@ -193,7 +193,7 @@ class View extends React.Component {
 			<canvas
 				ref={ this.canvasRef }
 				height={ this.props.cellSize * this.boardHeight }
-				id='life-canvas'
+				className={ styles.lifeCanvas }
 				onClick={ this.mouseHandler }
 				onMouseDown={ this.mouseHandler }
 				onMouseEnter={ this.handleEnter }

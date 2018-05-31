@@ -8,22 +8,24 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import styles from '../styles/controls.css';
 
-const CtrlButton = props => (
-	<button disabled={ props.disabled } onClick={ props.cb } type='button'>
-		{ props.text }
-	</button>
-);
 
-CtrlButton.defaultProps = {
-	disabled: false
-};
+// const CtrlButton = props => (
+// 	// <button disabled={ props.disabled } onClick={ props.cb } type='button'>
+// 	// 	{ props.text }
+// 	// </button>
+// );
 
-CtrlButton.propTypes = {
-	cb: PropTypes.func.isRequired,
-	disabled: PropTypes.bool,
-	text: PropTypes.string.isRequired
-};
+// CtrlButton.defaultProps = {
+// 	disabled: false
+// };
+
+// CtrlButton.propTypes = {
+// 	cb: PropTypes.func.isRequired,
+// 	disabled: PropTypes.bool,
+// 	text: PropTypes.string.isRequired
+// };
 
 
 class Controls extends React.PureComponent {
@@ -36,22 +38,36 @@ class Controls extends React.PureComponent {
 
 	incSpeed = () => this.props.changeSpeed(1)
 
-
 	render() {
 		return  (
-			<div id='controls-container'>
-				<CtrlButton cb={ this.toggleAnimation } text={ this.props.animating ? 'Pause' : 'Start' } />
+			<div className={ styles.controlsContainer }>
+				<input onClick={ this.toggleAnimation } value={ this.props.animating ? 'Pause' : 'Start' }  type='button'/>
 
-				<div id='speed'>
-					<CtrlButton cb={ this.decSpeed } disabled={ !this.props.speed } text='&#8810;' />
-					<div>{ [ 'Slow', 'Medium', 'Fast' ][this.props.speed] }</div>
-					<CtrlButton cb={ this.incSpeed } disabled={ this.props.speed === 2 } text='&#8811;' />
+				<div className={ styles.sliderContainer }>
+					<input type='range' onChange={ event => console.log(event.target.value) } className={ styles.slider }/>
 				</div>
 
-				<CtrlButton cb={ this.props.clear } text='Clear Board' />
+				<input onClick={ this.props.clear } value='Reset' type='button'/>
 			</div>
 		);
 	}
+
+
+	// render() {
+	// 	return  (
+	// 		<div id='controls-container'>
+	// 			<input onClick={ this.toggleAnimation } value={ this.props.animating ? 'Pause' : 'Start' }  type='button'/>
+
+	// 			<div id='speed'>
+	// 				<input onClick={ this.decSpeed } disabled={ !this.props.speed } value='&#8810;'  type='button'/>
+	// 				<div>{ [ 'Slow', 'Medium', 'Fast' ][this.props.speed] }</div>
+	// 				<input onClick={ this.incSpeed } disabled={ this.props.speed === 2 } value='&#8811;' type='button' />
+	// 			</div>
+
+	// 			<input onClick={ this.props.clear } value='Clear Board' type='button'/>
+	// 		</div>
+	// 	);
+	// }
 }
 
 
