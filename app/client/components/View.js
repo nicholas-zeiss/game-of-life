@@ -13,11 +13,13 @@ import styles from '../styles/gameView.css';
 import { addGlow, COLORS, drawCell } from '../utils/cells';
 
 
-class View extends React.PureComponent {
+class View extends React.Component {
 	static propTypes = {
 		animating: PropTypes.bool.isRequired,
+		board: PropTypes.func.isRequired,
+		boardHeight: PropTypes.number,
+		boardWidth: PropTypes.number,
 		cellSize: PropTypes.number.isRequired,
-		cells: PropTypes.array.isRequired,
 		glow: PropTypes.any,
 		preset: PropTypes.array,
 		toggleCells: PropTypes.func.isRequired
@@ -27,11 +29,13 @@ class View extends React.PureComponent {
 	constructor(props) {
 		super(props);
 
-		this.boardHeight = props.cells.length;
-		this.boardWidth = props.cells[0].length;
+		this.boardHeight = props.boardHeight;
+		this.boardWidth = props.boardWidth;
+
 		this.canvasRef = React.createRef();
 
 		this.state = {
+			cells: null,
 			mouseCell: null,			// Cell mouse is over, ie [ int r, int c ]
 			mouseDown: false,
 			selectedCells: new Set()		// Holds cells selected in a mouse drag
@@ -39,8 +43,20 @@ class View extends React.PureComponent {
 	}
 
 
-	UNSAFE_componentWillReceiveProps() {
-		this.setState({ selectedCells: new Set() });
+	componentDidMount() {
+		this.props.board().subscribe((cells) => {
+			this.setState({ cells });
+		});
+	}
+
+
+
+	shouldComponentUpdate(nextProps, nextState) {
+		if (!this.state.cells && !nextState.cells) {
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -61,7 +77,7 @@ class View extends React.PureComponent {
 
 
 	validCell(row, col) {
-		return this.props.cells[row] && this.props.cells[row][col] !== undefined;
+		return this.state.cells[row] && this.state.cells[row][col] !== undefined;
 	}
 
 
@@ -75,7 +91,7 @@ class View extends React.PureComponent {
 
 
 	loopOverCells(cb) {
-		this.props.cells.forEach((row, r) => {
+		this.state.cells.forEach((row, r) => {
 			row.forEach((cell, c) => cb(cell, r, c));
 		});
 	}
@@ -88,7 +104,7 @@ class View extends React.PureComponent {
 			col += this.state.mouseCell.col;
 
 			// No need to draw if cell is already alive (ie already drawn)
-			if (this.validCell(row, col) && !this.props.cells[row][col]) {
+			if (this.validCell(row, col) && !this.state.cells[row][col]) {
 				drawCell(this.ctx, COLORS.liveCell, row, col, this.props.cellSize);
 			}
 		});
@@ -102,7 +118,7 @@ class View extends React.PureComponent {
 			r += row;
 			c += col;
 
-			if (this.validCell(r, c) && !this.props.cells[r][c]) {
+			if (this.validCell(r, c) && !this.state.cells[r][c]) {
 				toToggle.push(r + ':' + c);
 			}
 		});
@@ -113,9 +129,9 @@ class View extends React.PureComponent {
 
 	// Toggles a cell between alive/dead in the view but not the model
 	toggleCell(r, c) {
-		drawCell(this.ctx, !this.props.cells[r][c], r, c, this.props.cellSize);
+		drawCell(this.ctx, !this.state.cells[r][c], r, c, this.props.cellSize);
 
-		if (!this.props.cells[r][c]) {
+		if (!this.state.cells[r][c]) {
 			addGlow(this.ctx, this.props.glow, r, c, this.props.cellSize);
 		}
 	}
@@ -159,11 +175,14 @@ class View extends React.PureComponent {
 
 
 	handleUp = (type) => {
+		const update = { mouseDown: false };
+
 		if (this.state.selectedCells.size) {
-			this.props.toggleCells(this.state.selectedCells, false);
+			update.selectedCells = new Set();
+			const cellsCopy = new Set(this.state.selectedCells);
+			this.props.toggleCells(cellsCopy, false);
 		}
 
-		const update = { mouseDown: false };
 		type === 'mouseleave' ? update.mouseCell = null : null;
 
 		this.setState(update);

@@ -35,7 +35,6 @@ class GameOfLife extends React.Component {
 			animating: false,
 			animateInterval: null,
 			gameWidth: 800,
-			cells: game.board,
 			life: game,
 			speed: 150,
 			selectedPreset: null
@@ -53,7 +52,7 @@ class GameOfLife extends React.Component {
 		this.speedSubject
 			.pipe(
 				distinctUntilChanged(),
-				// debounceTime(10)
+				debounceTime(10)
 			)
 			.subscribe(this.changeSpeed);
 
@@ -80,15 +79,12 @@ class GameOfLife extends React.Component {
 
 	animate = () => (
 		setInterval(() => {
-			const { anyAlive, change } = this.state.life.updateBoard();
+			const anyAlive = this.state.life.updateBoard();
 
 			if (!anyAlive) {
 				this.stopAnimation();
 			}
 
-			if (change) {
-				this.setState(state => ({ cells: state.life.board }));
-			}
 		}, this.state.speed)
 	);
 
@@ -128,26 +124,18 @@ class GameOfLife extends React.Component {
 			return;
 		}
 
-		cellSet.forEach((cell) => {
-			const [r, c] = cell.split(':');
-			this.state.life.flipCellState(r, c);
-		});
-
-		const update = {};
+		this.state.life.flipCellStates(cellSet);
 
 		if (clearPreset) {
 			document.getElementById('app').style.cursor = 'auto';
-			update.selectedPreset = null;
+			this.setState({ selectedPreset: null });
 		}
-
-		this.setState(state => Object.assign(update, { cells: state.life.board }));
 	}
 
 
 	clear = () => {
 		this.stopAnimation(() => {
 			this.state.life.clear();
-			this.setState(state => ({ cells: state.life.board }));
 		});
 	}
 
@@ -189,8 +177,10 @@ class GameOfLife extends React.Component {
 							<div ref={ this.gameContainer } className={ styles.viewContainer }>
 								<View
 									animating={ this.state.animating }
+									board={ this.state.life.subscribeBoard }
+									boardHeight={ this.state.life.height }
+									boardWidth={ this.state.life.width }
 									cellSize={ cellSize }
-									cells={ this.state.cells }
 									glow={ this.glowCanvas.current }
 									preset={ this.state.selectedPreset }
 									toggleCells={ this.toggleCells }

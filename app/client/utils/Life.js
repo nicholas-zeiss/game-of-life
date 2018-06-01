@@ -7,8 +7,16 @@
 **/
 
 
+import { BehaviorSubject } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+
+
 const emptyBoard = (width, height) => (
 	new Array(height).fill(1).map(() => new Array(width).fill(false))
+);
+
+const equalBoards = (a, b) => (
+	a.every((rA, i) => rA.every((cA, j) => cA === b[i][j]))
 );
 
 const wrapIndex = (index, length) => {
@@ -24,18 +32,34 @@ const wrapIndex = (index, length) => {
 class Life {
 	constructor(width, height) {
 		this._board = emptyBoard(width, height);
+		this.boardSubject = new BehaviorSubject();
 		this.generation = 0;
 		this.height = height;
 		this.width = width;
+
+		this.boardSubject.next(this._board);
 	}
 
-	get board() {
-		return this._board.map(row => [...row]);
-	}
+
+	subscribeBoard = () => (
+		this.boardSubject
+			.pipe(
+				distinctUntilChanged(equalBoards),
+				map(board => board.map(row => [...row]))
+			)
+	)
 
 
-	flipCellState(row, col) {
-		this._board[row][col] = !this._board[row][col];
+	flipCellStates(cellSet) {
+		const boardCopy = this._board.map(row => [...row]);
+
+		cellSet.forEach((cell) => {
+			const [row, col] = cell.split(':');
+			boardCopy[row][col] = !this._board[row][col];
+		});
+
+		this.boardSubject.next(boardCopy);
+		this._board = boardCopy;
 	}
 
 
@@ -44,16 +68,14 @@ class Life {
 	updateBoard() {
 		const newBoard = emptyBoard(this.width, this.height);
 
-		let change = 0;
+		let change = false;
 		let anyAlive = false;
 
 		for (let r = 0; r < this.height; r++) {
 			for (let c = 0; c < this.width; c++) {
 				const count = this.countLiveNeighbors(r, c);
 
-				if (count < 2) {
-					newBoard[r][c] = false;
-				} else if (count === 2) {
+				if (count === 2) {
 					newBoard[r][c] = this._board[r][c];
 				} else if (count === 3) {
 					newBoard[r][c] = true;
@@ -67,9 +89,13 @@ class Life {
 		}
 
 		this.generation++;
-		this._board = newBoard;
 
-		return { anyAlive, change };
+		if (change) {
+			this._board = newBoard;
+			this.boardSubject.next(newBoard);
+		}
+
+		return anyAlive;
 	}
 
 
@@ -93,6 +119,7 @@ class Life {
 
 	clear() {
 		this._board = emptyBoard(this.width, this.height);
+		this.boardSubject.next(this._board);
 		this.generation = 0;
 	}
 }
