@@ -7,7 +7,6 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Subject } from 'rxjs';
 
 import styles from '../styles/controls.css';
 

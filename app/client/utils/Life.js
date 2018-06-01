@@ -32,12 +32,12 @@ const wrapIndex = (index, length) => {
 class Life {
 	constructor(width, height) {
 		this._board = emptyBoard(width, height);
-		this.boardSubject = new BehaviorSubject();
+		this.boardSubject = new BehaviorSubject(this._board);
 		this.generation = 0;
 		this.height = height;
 		this.width = width;
 
-		this.boardSubject.next(this._board);
+		// thisK.boardSubject.next(this._board);
 	}
 
 

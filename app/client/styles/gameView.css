@@ -1,12 +1,12 @@
 
 
 
-			.lifeCanvas {
-				box-sizing: content-box;
-				width: 100%;
-				cursor: pointer;
-				border: 1px solid #484848;
-				border-radius: 2px;
-			}
+.lifeCanvas {
+	border-radius: 2px;
+	border: 1px solid #484848;
+	box-sizing: content-box;
+	cursor: pointer;
+	width: 100%;
+}
 
 

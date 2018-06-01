@@ -50,16 +50,6 @@ class View extends React.Component {
 	}
 
 
-
-	shouldComponentUpdate(nextProps, nextState) {
-		if (!this.state.cells && !nextState.cells) {
-			return false;
-		}
-
-		return true;
-	}
-
-
 	componentDidUpdate() {
 		this.ctx = this.canvasRef.current.getContext('2d');
 		const cellSize = this.props.cellSize;
