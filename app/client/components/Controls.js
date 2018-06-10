@@ -13,16 +13,27 @@ import styles from '../styles/controls.css';
 
 class Controls extends React.PureComponent {
 	static propTypes = {
-		animating: PropTypes.bool.isRequired,
+		animating: PropTypes.object.isRequired,
 		clear: PropTypes.func.isRequired,
-		speedSubject: PropTypes.any.isRequired,
+		speedSubject: PropTypes.object.isRequired,
 		startAnimation: PropTypes.func.isRequired,
 		stopAnimation: PropTypes.func.isRequired
 	};
 
+	state = {
+		animating: false,
+		speed: .5
+	};
+
+
+	componentDidMount() {
+		this.props.animating.subscribe(animating => this.setState({ animating }));
+		this.props.speedSubject.subscribe(speed => this.setState({ speed }));
+	}
+
 
 	toggleAnimation = () => {
-		this.props.animating ? this.props.stopAnimation() : this.props.startAnimation();
+		this.state.animating ? this.props.stopAnimation() : this.props.startAnimation();
 	};
 
 
@@ -35,8 +46,12 @@ class Controls extends React.PureComponent {
 		return  (
 			<div className={ styles.controlsContainer }>
 				<div className={ styles.playBackContainer }>
-					<button onClick={ this.toggleAnimation } type='button'>
-						<span>{ '\u25B6' }</span><span>{ '\u258E' }</span>
+					<button
+						className={ this.state.animating ? styles.pause : styles.play }
+						onClick={ this.toggleAnimation }
+						type='button'
+					>
+						{ this.state.animating ?  '\u2590\u2590' : '\u25B6' }
 					</button>
 
 					<button onClick={ this.props.clear } type='button'>
@@ -45,7 +60,14 @@ class Controls extends React.PureComponent {
 				</div>
 
 				<div className={ styles.sliderContainer }>
-					<input className={ styles.slider }  max={ 100 } min={ 0 } onInput={ this.updateSpeed } type='range' />
+					<input
+						className={ styles.slider }
+						defaultValue={ this.state.speed * 100 }
+						max={ 100 }
+						min={ 0 }
+						onInput={ this.updateSpeed }
+						type='range'
+					/>
 				</div>
 			</div>
 		);

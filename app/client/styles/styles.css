@@ -80,6 +80,9 @@ button {
 	min-width: 550px;
 	padding: 10px 20px 10px;
 	width: 80vw;
+  color: #191818;
+  font: 600 20px 'Open Sans';
+  text-shadow: 0.5px 0.5px 0.5px #9da0a7;
 }
 
 

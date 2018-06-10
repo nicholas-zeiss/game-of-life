@@ -9,7 +9,7 @@
 
 import React from 'react';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, sampleTime } from 'rxjs/operators';
 
 import Controls from './Controls';
 import View from './View';
@@ -33,34 +33,27 @@ class GameOfLife extends React.Component {
 
 		this.state = {
 			animating: false,
-			animateInterval: null,
 			gameWidth: 800,
+			generation: 0,
 			life: game,
-			speed: 150,
 			selectedPreset: null
 		};
 
 
 		this.gameContainer = React.createRef();
 		this.glowCanvas = React.createRef();
-
-		this.speedSubject = new Subject();
 	}
 
 
 	componentDidMount() {
-		this.speedSubject
-			.pipe(
-				distinctUntilChanged(),
-				debounceTime(10)
-			)
-			.subscribe(this.changeSpeed);
+		this.state.life.generation.subscribe(generation => this.setState({ generation }));
 
 		const resizeCanvas = () => {
 			this.setState({ gameWidth: this.gameContainer.current.clientWidth });
 		};
 
 		window.onresize = resizeCanvas;
+
 		resizeCanvas();
 	}
 
@@ -73,48 +66,6 @@ class GameOfLife extends React.Component {
 			drawGlow(ctx, radius, COLORS.gradientStart, COLORS.gradientStop);
 
 			this.forceUpdate();
-		}
-	}
-
-
-	animate = () => (
-		setInterval(() => {
-			const anyAlive = this.state.life.updateBoard();
-
-			if (!anyAlive) {
-				this.stopAnimation();
-			}
-
-		}, this.state.speed)
-	);
-
-
-	startAnimation = (cb) => {
-		cb = cb ? cb : () => {};
-
-		if (!this.state.animating) {
-			this.setState({
-				animating: true,
-				animateInterval: this.animate()
-			}, cb);
-		} else {
-			cb();
-		}
-	}
-
-
-	stopAnimation = (cb) => {
-		cb = cb ? cb : () => {};
-
-		if (this.state.animating) {
-			clearInterval(this.state.animateInterval);
-
-			this.setState({
-				animating: false,
-				animateInterval: null
-			}, cb);
-		} else {
-			cb();
 		}
 	}
 
@@ -133,31 +84,9 @@ class GameOfLife extends React.Component {
 	}
 
 
-	clear = () => {
-		this.stopAnimation(() => {
-			this.state.life.clear();
-		});
-	}
-
-
 	setPreset = (cells) => {
 		document.getElementById('app').style.cursor = 'move';
-		this.setState({ selectedPreset: cells }, this.stopAnimation);
-	}
-
-
-	changeSpeed = (percent) => {
-		const nextSpeed = 10 + percent * 300;
-
-		if (!this.state.animating) {
-			this.setState({ speed: nextSpeed });
-		} else {
-			this.stopAnimation(() => {
-				this.setState({
-					speed: nextSpeed
-				}, this.startAnimation);
-			});
-		}
+		this.setState({ selectedPreset: cells }, this.state.life.stopAnimation);
 	}
 
 
@@ -175,9 +104,10 @@ class GameOfLife extends React.Component {
 					<div className={ styles.lifeContainer }>
 						<div className={ styles.viewControlsContainer }>
 							<div ref={ this.gameContainer } className={ styles.viewContainer }>
+								<span>Generation: { this.state.generation }</span>
 								<View
 									animating={ this.state.animating }
-									board={ this.state.life.subscribeBoard }
+									board={ this.state.life.board }
 									boardHeight={ this.state.life.height }
 									boardWidth={ this.state.life.width }
 									cellSize={ cellSize }
@@ -188,11 +118,11 @@ class GameOfLife extends React.Component {
 							</div>
 
 							<Controls
-								animating={ this.state.animating }
-								clear={ this.clear }
-								speedSubject={ this.speedSubject }
-								startAnimation={ this.startAnimation }
-								stopAnimation={ this.stopAnimation }
+								animating={ this.state.life.animating }
+								clear={ this.state.life.clear }
+								speedSubject={ this.state.life.animationSpeedSubject }
+								startAnimation={ this.state.life.startAnimation }
+								stopAnimation={ this.state.life.stopAnimation }
 							/>
 						</div>
 					</div>

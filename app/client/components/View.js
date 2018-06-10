@@ -16,7 +16,7 @@ import { addGlow, COLORS, drawCell } from '../utils/cells';
 class View extends React.Component {
 	static propTypes = {
 		animating: PropTypes.bool.isRequired,
-		board: PropTypes.func.isRequired,
+		board: PropTypes.object.isRequired,
 		boardHeight: PropTypes.number,
 		boardWidth: PropTypes.number,
 		cellSize: PropTypes.number.isRequired,
@@ -44,7 +44,7 @@ class View extends React.Component {
 
 
 	componentDidMount() {
-		this.props.board().subscribe((cells) => {
+		this.props.board.subscribe((cells) => {
 			this.setState({ cells });
 		});
 	}

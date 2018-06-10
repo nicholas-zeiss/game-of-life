@@ -37,8 +37,8 @@
   flex: 1 0 0;
 }
 
+
 button:first-child {
-  align-items: center;
   border-radius: 7px 0 0 7px;
   display: inline-flex;
   flex-direction: row;
@@ -51,16 +51,14 @@ button:last-child {
 }
 
 
-span:first-child {
-  font-size: 21px;
+button.play {
+  padding-right: 7.5px;
 }
 
 
-span:last-child {
-  font-size: 16px;
-  padding-top: 1px;
-  margin-right: -11px;
-  margin-left: -3px;
+button.pause {
+  font-size: 18px;
+  padding: 0 10px 0 7.5px;
 }
 
 

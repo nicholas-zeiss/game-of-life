@@ -8,8 +8,7 @@
 
 
 import { BehaviorSubject } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
-
+import { bufferTime, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 const emptyBoard = (width, height) => (
 	new Array(height).fill(1).map(() => new Array(width).fill(false))
@@ -29,25 +28,45 @@ const wrapIndex = (index, length) => {
 };
 
 
+const percentSpeedToMS = (percent) => 20 + percent * 300;
+
+
 class Life {
-	constructor(width, height) {
+	_animationInterval = null;
+	_animationSpeed = .5;
+	_animatingSubject = new BehaviorSubject(false);
+	_gen = 0;
+	_genSubject = new BehaviorSubject(0);
+	animationSpeedSubject = new BehaviorSubject(.5);
+
+	constructor(width = 80, height = 40) {
 		this._board = emptyBoard(width, height);
-		this.boardSubject = new BehaviorSubject(this._board);
-		this.generation = 0;
+		this._boardSubject = new BehaviorSubject(this._board);
 		this.height = height;
 		this.width = width;
 
-		// thisK.boardSubject.next(this._board);
+		this.animationSpeedSubject
+			.pipe(distinctUntilChanged(), debounceTime(100))
+			.subscribe(this.changeSpeed);
 	}
 
 
-	subscribeBoard = () => (
-		this.boardSubject
-			.pipe(
-				distinctUntilChanged(equalBoards),
-				map(board => board.map(row => [...row]))
-			)
-	)
+	get animating() {
+		return this._animatingSubject;
+	}
+
+
+	get board() {
+		return this._boardSubject.pipe(
+			distinctUntilChanged(equalBoards),
+			map(board => board.map(row => [...row]))
+		);
+	}
+
+
+	get generation() {
+		return this._genSubject;
+	}
 
 
 	flipCellStates(cellSet) {
@@ -58,8 +77,26 @@ class Life {
 			boardCopy[row][col] = !this._board[row][col];
 		});
 
-		this.boardSubject.next(boardCopy);
+		this._boardSubject.next(boardCopy);
 		this._board = boardCopy;
+	}
+
+
+	countLiveNeighbors(row, col) {
+		let count = 0;
+
+		for (let r = -1; r < 2; r++) {
+			for (let c = -1; c < 2; c++) {
+				if (r === 0 && c === 0) continue;
+
+				const nRow = wrapIndex(row + r, this.height);
+				const nCol = wrapIndex(col + c, this.width);
+
+				this._board[nRow][nCol] ? count++ : null;
+			}
+		}
+
+		return count;
 	}
 
 
@@ -88,39 +125,59 @@ class Life {
 			}
 		}
 
-		this.generation++;
+		this._genSubject.next(++this._gen);
 
 		if (change) {
 			this._board = newBoard;
-			this.boardSubject.next(newBoard);
+			this._boardSubject.next(newBoard);
 		}
 
 		return anyAlive;
 	}
 
 
-	countLiveNeighbors(row, col) {
-		let count = 0;
+	changeSpeed = (speed) => {
+		this._animationSpeed = speed;
 
-		for (let r = -1; r < 2; r++) {
-			for (let c = -1; c < 2; c++) {
-				if (r === 0 && c === 0) continue;
-
-				const nRow = wrapIndex(row + r, this.height);
-				const nCol = wrapIndex(col + c, this.width);
-
-				this._board[nRow][nCol] ? count++ : null;
-			}
+		if (this._animationInterval !== null) {
+			this.stopAnimation();
+			this.startAnimation();
 		}
-
-		return count;
 	}
 
 
-	clear() {
+	startAnimation = () => {
+		if (this._animationInterval !== null) {
+			return;
+		}
+
+		const delay = percentSpeedToMS(this._animationSpeed);
+
+		this._animationInterval = setInterval(() => {
+			const anyAlive = this.updateBoard();
+			if (!anyAlive) {
+				this.stopAnimation();
+			}
+		}, delay);
+
+		this._animatingSubject.next(true);
+	}
+
+
+	stopAnimation = () => {
+		if (this._animationInterval) {
+			clearInterval(this._animationInterval);
+			this._animationInterval = null;
+			this._animatingSubject.next(false);
+		}
+	}
+
+
+	clear = () => {
+		this.stopAnimation();
 		this._board = emptyBoard(this.width, this.height);
-		this.boardSubject.next(this._board);
-		this.generation = 0;
+		this._boardSubject.next(this._board);
+		this._genSubject.next(this._gen = 0);
 	}
 }
 
