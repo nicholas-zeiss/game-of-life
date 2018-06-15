@@ -17,7 +17,7 @@ class View extends React.Component {
 	static propTypes = {
 		cells: PropTypes.array,
 		life: PropTypes.object.isRequired,
-		modifiedCells: PropTypes.array,
+		modifiedCells: PropTypes.object.isRequired,
 		mouseHandler: PropTypes.func.isRequired,
 		presetCells: PropTypes.array
 	};
@@ -85,10 +85,11 @@ class View extends React.Component {
 		const cellSize = this.state.cellSize;
 		const glowCanvas = this.glowRef.current;
 
-		(this.props.modifiedCells || []).forEach(([ row, col ]) => {
-			drawCell(ctx, !this.state.cells[row][col], row, col, cellSize);
+		this.props.modifiedCells.forEach((locStr) => {
+			const [row, col] = locStr.split(':').map(Number);
+			drawCell(ctx, !this.props.cells[row][col], row, col, cellSize);
 
-			if (!this.state.cells[row][col]) {
+			if (!this.props.cells[row][col]) {
 				addGlow(ctx, glowCanvas, row, col, cellSize);
 			}
 		});

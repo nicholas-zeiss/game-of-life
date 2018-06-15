@@ -27,10 +27,9 @@ const MouseInput = (View) => {
 			this.state = {
 				animating: false,
 				cells: null,
-				modifiedCells: null,
+				modifiedCells: new Set(),
 				mouseCell: null,
-				mouseDown: false,
-				presetCells: null
+				mouseDown: false
 			};
 		}
 
@@ -42,7 +41,7 @@ const MouseInput = (View) => {
 
 
 		validCell(row, col) {
-			return row >= 0 && row < this.boardHeight && col >= 0 && col < this.boardHeight;
+			return row >= 0 && row < this.boardHeight && col >= 0 && col < this.boardWidth;
 		}
 
 
@@ -53,19 +52,25 @@ const MouseInput = (View) => {
 
 			const row = Math.floor(event.nativeEvent.offsetY / cellSize);
 			const col = Math.floor(event.nativeEvent.offsetX / cellSize);
-
 			const valid = this.validCell(row, col);
 
 			if (event.type === 'mouseenter') {
 				const down = event.nativeEvent.buttons === 1;
-				this.setState({ mouseDown: down });
+				this.setState({
+					mouseCell: { row, col },
+					mouseDown: down
+				});
+
 			} else if (event.type === 'click' && valid) {
 				this.handleClick(row, col);
+
 			} else if (event.type === 'mousedown') {
 				this.setState({ mouseDown: true });
+
 			} else if (event.type === 'mouseup' || event.type === 'mouseleave') {
 				this.handleUp(event.type);
-			} else if (event.type === 'mousemove' && valid) {
+
+			} else if (event.type === 'mousemove' && valid && this.state.mouseCell) {
 				this.handleMove(row, col);
 			}
 		}
@@ -92,34 +97,50 @@ const MouseInput = (View) => {
 
 
 		handleUp = (type) => {
-			// const update = { mouseDown: false };
+			const update = { mouseDown: false };
 
-			// if (this.state.selectedCells.size) {
-			// 	update.selectedCells = new Set();
-			// 	const cellsCopy = new Set(this.state.selectedCells);
-			// 	this.props.toggleCells(cellsCopy, false);
-			// }
+			if (this.state.modifiedCells.size) {
+				update.modifiedCells = new Set();
+				const cellsCopy = new Set(this.state.modifiedCells);
+				this.props.toggleCells(cellsCopy, false);
+			}
 
-			// type === 'mouseleave' ? update.mouseCell = null : null;
+			type === 'mouseleave' ? update.mouseCell = null : null;
 
-			// this.setState(update);
+			this.setState(update);
 		}
 
 
 		handleMove = (row, col) => {
-			// const locStr = row + ':' + col;
+			const locStr = row + ':' + col;
+			const stateLocStr = this.state.mouseCell.row + ':' + this.state.mouseCell.col;
 
-			// if (this.props.preset) {
-			// 	this.setState({ mouseCell: { row, col } });
-			// } else if (this.state.mouseDown && !this.state.selectedCells.has(locStr)) {
-			// 	this.toggleCell(row, col);
-			// 	this.state.selectedCells.add(locStr);
-			// }
+			if (this.props.preset && locStr !== stateLocStr) {
+				this.setState({ mouseCell: { row, col } });
+			} else if (this.state.mouseDown && !this.state.modifiedCells.has(locStr)) {
+				this.state.modifiedCells.add(locStr);
+				this.forceUpdate();
+			}
 		}
 
 
 		getAdjustedPreset() {
-			return null;
+			if (this.state.animating || !this.props.preset || !this.state.mouseCell) {
+				return null;
+			}
+
+			const presetCells = [];
+
+			this.props.preset.forEach(([ row, col ]) => {
+				row += this.state.mouseCell.row;
+				col += this.state.mouseCell.col;
+
+				if (this.validCell(row, col)) {
+					presetCells.push([row, col]);
+				}
+			});
+
+			return presetCells;
 		}
 
 
