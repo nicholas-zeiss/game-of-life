@@ -8,8 +8,8 @@
 
 
 import React from 'react';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, sampleTime } from 'rxjs/operators';
+// import { Subject } from 'rxjs';
+// import { debounceTime, distinctUntilChanged, sampleTime } from 'rxjs/operators';
 
 import Controls from './Controls';
 import View from './View';
@@ -19,6 +19,7 @@ import styles from '../styles/styles.css';
 
 import { COLORS, drawGlow } from '../utils/cells';
 import Life from '../utils/Life';
+import OSCILLATORS from '../utils/oscillators';
 
 
 class GameOfLife extends React.Component {
@@ -42,6 +43,14 @@ class GameOfLife extends React.Component {
 
 		this.gameContainer = React.createRef();
 		this.glowCanvas = React.createRef();
+
+		const pulsar = OSCILLATORS[3];
+		const cellSet = pulsar.cells.reduce((cells, [r, c]) => {
+			cells.add(`${r + 10}:${c + 10}`);
+			return cells;
+		}, new Set());
+
+		this.toggleCells(cellSet);
 	}
 
 
@@ -70,7 +79,7 @@ class GameOfLife extends React.Component {
 	}
 
 
-	toggleCells = (cellSet, clearPreset) => {
+	toggleCells = (cellSet, clearPreset = false) => {
 		if (!cellSet.size && !cellSet.length) {
 			return;
 		}

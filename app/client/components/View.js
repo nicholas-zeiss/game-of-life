@@ -36,7 +36,7 @@ class View extends React.Component {
 
 		this.state = {
 			cells: null,
-			mouseCell: null,			// Cell mouse is over, ie [ int r, int c ]
+			mouseCell: null,						// Cell mouse is over, ie [ int r, int c ]
 			mouseDown: false,
 			selectedCells: new Set()		// Holds cells selected in a mouse drag
 		};
