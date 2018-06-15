@@ -28,7 +28,7 @@ const wrapIndex = (index, length) => {
 };
 
 
-const percentSpeedToMS = (percent) => 20 + percent * 300;
+const percentSpeedToMS = percent => 20 + percent * 300;
 
 
 class Life {

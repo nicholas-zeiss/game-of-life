@@ -22,12 +22,18 @@ export const addGlow = (ctx, glow, row, col, size) => {
 };
 
 
+export const drawBackground = (ctx, width, height) => {
+	ctx.fillStyle = COLORS.cellBorder;
+	ctx.fillRect(0, 0, width, height);
+};
+
+
 export const drawCell = (ctx, alive, row, col, size) => {
 	const x = col * size;
 	const y = row * size;
 
 	ctx.fillStyle = alive ? COLORS.liveCell : COLORS.deadCell;
-	ctx.fillRect(x + .5, y + .5, size - .5, size - .5);			// +/- 1 preserves borders between cells
+	ctx.fillRect(x + .5, y + .5, size - .5, size - .5);			// +/- .5 preserves borders between cells
 };
 
 
