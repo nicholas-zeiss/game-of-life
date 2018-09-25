@@ -13,6 +13,7 @@ import styles from '../styles/gameView.css';
 import { addGlow, COLORS, drawBackground, drawCell, drawGlow } from '../utils/cells';
 import MouseInput from './MouseInput';
 
+
 class View extends React.Component {
 	static propTypes = {
 		cells: PropTypes.array,

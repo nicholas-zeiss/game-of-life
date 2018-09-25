@@ -100,11 +100,11 @@ button.pause {
 
 
 .slider::-webkit-slider-runnable-track {
-  background: #9c9c9c;
+  background: #d2cdcc;
   border-radius: 4px;
-  box-shadow: inset 0 0 1.5px 0px #1f1f1f;
+  box-shadow: inset 0 0 1px 0px #1f1f1f;
   cursor: pointer;
-  height: 7px;
+  height: 6px;
   outline: none;
   transition: all .3s;
   width: 100%;
@@ -113,7 +113,7 @@ button.pause {
 
 .slider:hover::-webkit-slider-runnable-track,
 .slider:active::-webkit-slider-runnable-track {
-  background: #828282;
+  background: #b7b3b2;
 }
 
 
@@ -129,15 +129,15 @@ button.pause {
   border: .1px solid #295faf;
   box-shadow: 0 0 4px 0.5px #0a2a588f;
   cursor: pointer;
-  height: 20px;
-  margin-top: -7px;
+  height: 15px;
+  margin-top: -4.5px;
   transition: background .3s;
-  width: 20px;
+  width: 15px;
 }
 
 
 .slider:active::-webkit-slider-thumb,
 .slider:hover::-webkit-slider-thumb {
-  background: #1952a7;
+  /*background: #1952a7;*/
 }
 
