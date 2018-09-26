@@ -38,7 +38,7 @@
     "lint": "eslint app/client/** app/server/**",
     "prestart": "webpack --watch &",
     "start": "webpack-dev-server",
-    "preproduction": "webpack --optimize-minimize",
+    "preproduction": "webpack --env prod --optimize-minimize",
     "production": "node app/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

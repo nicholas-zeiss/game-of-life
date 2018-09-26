@@ -6,10 +6,10 @@ const path = require('path');
 const webpack = require('webpack');
 
 
-module.exports = {
-	mode: 'development',
+module.exports = env => ({
+	mode: env === 'prod' ? 'production' : 'development',
 	entry: './app/client/Main.js',
-	devtool: 'eval-source-map',
+	devtool: env === 'dev' ? 'eval-source-map' : false,
 	output: {
 		filename: 'bundle.js',
 		path: path.resolve(__dirname, 'dist')
@@ -71,5 +71,5 @@ module.exports = {
 		}),
 		new webpack.HotModuleReplacementPlugin()
 	]
-};
+});
 
