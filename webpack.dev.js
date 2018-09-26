@@ -1,21 +1,22 @@
 
 
-const rxPaths = require('rxjs/_esm5/path-mapping');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const rxPaths = require('rxjs/_esm5/path-mapping');
 const webpack = require('webpack');
 
 
-module.exports = env => ({
-	mode: env === 'prod' ? 'production' : 'development',
+module.exports = {
+	mode: 'development',
 	entry: './app/client/Main.js',
-	devtool: env === 'dev' ? 'eval-source-map' : false,
+	devtool: 'eval-source-map',
 	output: {
 		filename: 'bundle.js',
-		path: path.resolve(__dirname, 'dist')
+		path: path.resolve(__dirname, 'build')
 	},
 	 devServer: {
-		contentBase: './dist',
+		contentBase: './build',
 		hot: true,
 		port: 8080
 	},
@@ -35,23 +36,19 @@ module.exports = env => ({
 				loader: 'babel-loader',
 				options: {
 					plugins: [
-						'transform-class-properties',
-						'transform-object-rest-spread',
+						'@babel/plugin-proposal-class-properties',
+						'@babel/plugin-proposal-object-rest-spread',
 						'react-hot-loader/babel'
 					],
 					presets: [
-						'env',
-						'react'
+						'@babel/preset-env',
+						'@babel/preset-react'
 					]
 				}
 			},
 			{
 				test: /\.html$/,
-				use: [
-					{
-						loader: 'html-loader'
-					}
-				]
+				loader: 'html-loader'
 			},
 			{
 				test: /\.css$/,
@@ -66,10 +63,11 @@ module.exports = env => ({
 		]
 	},
 	plugins: [
+		new CleanWebpackPlugin(['build']),
 		new HtmlWebPackPlugin({
 			template: 'app/index.html'
 		}),
 		new webpack.HotModuleReplacementPlugin()
 	]
-});
+};
 
