@@ -2,7 +2,7 @@
  *
  * 	This class implements Conway's Game of Life. It holds the state of all the cells in a 2d array and updates them
  * 	when called to do so. It wraps around its borders, ie a cell on the left edge can count cells on the right edge
- * 	as neighbors.
+ * 	as neighbors. Accessing an instances state is done via rxjs BehaviorSubjects following the observable pattern.
  *
 **/
 
@@ -30,7 +30,8 @@ const wrapIndex = (index, length) => {
 	return index;
 };
 
-const percentSpeedToMS = percent => 20 + percent * 300;
+//
+const percentSpeedToDelay = percent => 20 + (1 - percent) * 300;
 
 
 class Life {
@@ -138,8 +139,8 @@ class Life {
 	}
 
 
-	changeSpeed = (speed) => {
-		this._animationSpeed = speed;
+	changeSpeed = (percentSpeed) => {
+		this._animationSpeed = percentSpeed;
 
 		if (this._animationInterval !== null) {
 			this.stopAnimation();
@@ -153,7 +154,7 @@ class Life {
 			return;
 		}
 
-		const delay = percentSpeedToMS(this._animationSpeed);
+		const delay = percentSpeedToDelay(this._animationSpeed);
 
 		this._animationInterval = setInterval(() => {
 			const anyAlive = this.updateBoard();

@@ -39,7 +39,7 @@ class Controls extends React.PureComponent {
 
 
 	updateSpeed = (event) => {
-		const percentSpeed = 1 - (event.target.value / 100);
+		const percentSpeed = event.target.value / 100;
 		this.props.speedSubject.next(percentSpeed);
 	}
 
