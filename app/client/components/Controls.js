@@ -4,40 +4,79 @@
  *
 **/
 
+
+import PropTypes from 'prop-types';
 import React from 'react';
 
+import styles from '../styles/controls.css';
 
-const Controls = props => {
-	const toggleAnimation = () => {
-		props.animating ? props.stopAnimation() : props.startAnimation();
+
+class Controls extends React.PureComponent {
+	static propTypes = {
+		animating: PropTypes.object.isRequired,
+		clear: PropTypes.func.isRequired,
+		speedSubject: PropTypes.object.isRequired,
+		startAnimation: PropTypes.func.isRequired,
+		stopAnimation: PropTypes.func.isRequired
 	};
 
-	const speed = [ 'Slow', 'Medium', 'Fast' ][props.speed];
+	state = {
+		animating: false,
+		speed: .5
+	};
 
-	return  (
-		<div id='controls-container'>	
-			<button onClick={ toggleAnimation } type='button'>
-				{ props.animating ? 'Pause' : 'Start' }
-			</button>
 
-			<div id='speed'>
-				<button disabled={ props.speed == 0 } onClick={ props.changeSpeed.bind(null, -1) }>
-					&#8810;
-				</button>
+	componentDidMount() {
+		this.props.animating.subscribe(animating => this.setState({ animating }));
+		this.props.speedSubject.subscribe(speed => this.setState({ speed }));
+	}
 
-				<div>{ speed }</div>
 
-				<button disabled={ props.speed == 2 } onClick={ props.changeSpeed.bind(null, 1) }>
-					&#8811;
-				</button>
+	toggleAnimation = () => {
+		this.state.animating ? this.props.stopAnimation() : this.props.startAnimation();
+	};
+
+
+	updateSpeed = (event) => {
+		this.props.speedSubject.next(1 - (event.target.value / 100));
+	}
+
+
+	render() {
+		return  (
+			<div className={ styles.controlsContainer }>
+				<div className={ styles.playBackContainer }>
+					<button
+						className={ this.state.animating ? styles.pause : styles.play }
+						type='button'
+						onClick={ this.toggleAnimation }
+					>
+						<i className='material-icons' style={{ 'font-size': '30px' }}>
+							{ this.state.animating ? 'pause' : 'play_arrow' }
+						</i>
+					</button>
+
+					<button type='button' onClick={ this.props.clear }>
+						{ 'Reset' }
+					</button>
+				</div>
+
+				<div className={ styles.sliderContainer }>
+					<span style={{ 'margin-right': '10px' }}> Slower </span>
+					<input
+						className={ styles.slider }
+						defaultValue={ this.state.speed * 100 }
+						max={ 100 }
+						min={ 0 }
+						type='range'
+						onInput={ this.updateSpeed }
+					/>
+					<span style={{ 'margin-left': '10px' }}> Faster </span>
+				</div>
 			</div>
-			
-			<button id='clear' onClick={ props.clear }>
-				Clear Board
-			</button>
-		</div>
-	);
-};
+		);
+	}
+}
 
 
 export default Controls;

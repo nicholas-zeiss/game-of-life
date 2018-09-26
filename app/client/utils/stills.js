@@ -4,18 +4,19 @@
  *
 **/
 
-export default {
-	Beehive: {
+export default [
+	{
+		name: 'Beehive',
 		cells: [
-							[0, 1], [0, 2],
+			[0, 1], [0, 2],
 			[1, 0],									[1, 3],
-							[2, 1], [2, 2]
+			[2, 1], [2, 2]
 		],
 		width: 4,
 		height: 3
 	},
-	
-	Block: {
+	{
+		name: 'Block',
 		cells: [
 			[0, 0], [0, 1],
 			[1, 0], [1, 1]
@@ -23,18 +24,18 @@ export default {
 		width: 2,
 		height: 2
 	},
-	
-	Boat: {
+	{
+		name: 'Boat',
 		cells: [
 			[0, 0], [0, 1],
 			[1, 0],					[1, 2],
-							[2, 1]
+			[2, 1]
 		],
 		width: 3,
 		height: 3
 	},
-	
-	Loaf: {
+	{
+		name: 'Loaf',
 		cells: [
 			        [0, 1], [0, 2],
 			[1, 0],                 [1, 3],
@@ -44,8 +45,8 @@ export default {
 		width: 4,
 		height: 4
 	},
-	
-	Tub: {
+	{
+		name: 'Tub',
 		cells: [
 			        [0, 1],
 			[1, 0],         [1, 2],
@@ -54,5 +55,5 @@ export default {
 		width: 3,
 		height: 3
 	}
-};
+];
 

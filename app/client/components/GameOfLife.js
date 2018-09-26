@@ -1,10 +1,11 @@
 /**
  *
  *	This is the root component of this app. It holds the instance of the Life class which models our game of life state (a 2d array
- *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update the model as necessary. It has subcomponents View and 
+ *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update the model as necessary. It has subcomponents View and
  *	Controls, which render the game and handle user input.
  *
 **/
+
 
 import React from 'react';
 
@@ -12,198 +13,95 @@ import Controls from './Controls';
 import View from './View';
 import Selector from './Selector';
 
-import { drawGlow } from '../utils/cells';
-import colors from '../utils/colors';
+import styles from '../styles/styles.css';
+
 import Life from '../utils/Life';
-import speeds from '../utils/speeds';
+import OSCILLATORS from '../utils/oscillators';
 
 
 class GameOfLife extends React.Component {
+	static gameHeight = 40;
+	static gameWidth = 80;
+
+
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			animating: false,
-			animateInterval: null,
-			canvasWidth: 800,
-			cellColumns: 80,
-			cellRows: 35,
-			life: new Life(80, 35),
-			speed: 1,								// 0: slow, 1: medium, 2: fast
+			generation: 0,
+			life: new Life(GameOfLife.gameWidth, GameOfLife.gameHeight),
 			selectedPreset: null
 		};
 
-		this.state.life.flipCellState(15, 36);
-		this.state.life.flipCellState(15, 37);
-		this.state.life.flipCellState(16, 35);
-		this.state.life.flipCellState(16, 36);
-		this.state.life.flipCellState(17, 36);
+		// load a preset and offset it by 10 cells from top left corner
+		const cellSet = OSCILLATORS[3].cells.reduce((cells, [r, c]) => (
+			cells.add(`${r + 10}:${c + 10}`) && cells
+		), new Set());
+
+		this.toggleCells(cellSet);
 	}
 
 
-	// as a window resize changes the size of our canvas must change
 	componentDidMount() {
-		const setCanvasSize = () => this.setState({ 
-			canvasWidth: this.canvasContainer.clientWidth 
-		});
-		
-		window.onresize = setCanvasSize;
-		setCanvasSize();
+		const currGeneration = this.state.life.generation;
+		currGeneration.subscribe(generation => this.setState({ generation }));
 	}
 
 
-	// to save computation the glow applied to live cells is only created once in a separate
-	// undisplayed canvas which must be updated on window resizes
-	componentDidUpdate(prevProps, prevState) {
-		if (this.state.canvasWidth != prevState.canvasWidth) {
-			const ctx = this.glowCanvas.getContext('2d');
-			const radius = 4 * this.state.canvasWidth / this.state.cellColumns;
-			
-			drawGlow(ctx, radius, colors.gradientStart, colors.gradientStop);
-
-			// now that the glow canvas is drawn we need to force <View/> to redraw
-			this.forceUpdate();
+	toggleCells = (cellSet, clearPreset = false) => {
+		if (!cellSet.size && !cellSet.length) {
+			return;
 		}
-	}
 
+		this.state.life.flipCellStates(cellSet);
 
-	// set an interval and return the id
-	animate = speed => {
-		return setInterval(() => {
-			// updateBoard will return false if no living cells remain
-			if (!this.state.life.updateBoard()) {
-				this.stopAnimation();
-			}
-
-			this.forceUpdate();
-		}, speed);
-	}
-
-
-	// start and stop take an optional callback to be executed after animation starts/stops
-	startAnimation = cb => {
-		cb = cb || function() {};
-
-		if (!this.state.animating) {
-			this.setState({
-				animating: true,
-				animateInterval: this.animate(speeds[this.state.speed])
-			}, cb);
-		} else {
-			cb();
-		}
-	}
-
-
-	stopAnimation = cb => {
-		cb = cb || function() {};
-
-		if (this.state.animating) {
-			clearInterval(this.state.animateInterval);
-			
-			this.setState({
-				animating: false,
-				animateInterval: null
-			}, cb);
-		} else {
-			cb();
-		}
-	}
-
-
-	toggleCells = (cellSet, clearPreset) => {
-		cellSet.forEach(cell => {
-			let [r, c] = cell.split(':');
-			this.state.life.flipCellState(r, c);
-		});
-
-		// clearPreset is true if user just placed a preset cell structure
 		if (clearPreset) {
 			document.getElementById('app').style.cursor = 'auto';
 			this.setState({ selectedPreset: null });
-		} else {
-			this.forceUpdate();
 		}
 	}
 
 
-	clear = () => {
-		this.stopAnimation(() => {
-			this.state.life.clear();
-			this.forceUpdate();
-		});
-	}
-
-
-	setPreset = cells => {
+	setPreset = (cells) => {
 		document.getElementById('app').style.cursor = 'move';
-		this.setState({ selectedPreset: cells }, this.stopAnimation);
-	}
-
-
-	// inc is +/- 1
-	changeSpeed = inc => {
-		if (!this.state.animating) {
-			this.setState({ speed: this.state.speed + inc });
-		
-		} else {
-			this.stopAnimation(() => {
-				this.setState({ 
-					speed: this.state.speed + inc
-				}, this.startAnimation);
-			});
-		}
+		this.setState({ selectedPreset: cells }, this.state.life.stopAnimation);
 	}
 
 
 	render() {
-		const cellSize = this.state.canvasWidth / this.state.cellColumns;
-
 		return (
-			<div id='app'>			
-				<div id='header'>
-					<h1> Conway&apos;s Game of Life </h1>
-					<h4>Use your mouse to toggle one or more cells (game must be paused), or insert a preset structure from the menu on the left.</h4>
-				</div>
-				
-				<div id='life-container'>
-					<div id='view-controls-container'>
-						<div>{ `Generation: ${this.state.life.generation}` }</div>
-						
-						<div id='view-container' ref={ el => this.canvasContainer = el }>
-							<View
-								animating={ this.state.animating }
-								cellSize={ cellSize }
-								cells={ this.state.life.board }
-								columns={ this.state.cellColumns }
-								glow={ this.glowCanvas }
-								preset={ this.state.selectedPreset }
-								rows={ this.state.cellRows }
-								toggleCells={ this.toggleCells }
-							/> 
+			<div id='app'>
+				<div className={ styles.appContainer }>
+					<div className={ styles.header }>
+						<span> Conway&apos;s Game of Life </span>
+						<p>Use your mouse to toggle one or more cells (game must be paused), or insert a preset structure from the menu on the left.</p>
+					</div>
+
+					<div className={ styles.lifeContainer }>
+						<div className={ styles.viewControlsContainer }>
+							<div ref={ this.gameContainer } className={ styles.viewContainer }>
+								<span>Generation: { this.state.generation }</span>
+								<View
+									life={ this.state.life }
+									preset={ this.state.selectedPreset }
+									toggleCells={ this.toggleCells }
+								/>
+							</div>
+
+							<Controls
+								animating={ this.state.life.animating }
+								clear={ this.state.life.clear }
+								speedSubject={ this.state.life.animationSpeedSubject }
+								startAnimation={ this.state.life.startAnimation }
+								stopAnimation={ this.state.life.stopAnimation }
+							/>
 						</div>
-						
-						<Controls
-							animating={ this.state.animating } 
-							changeSpeed={ this.changeSpeed } 
-							clear={ this.clear }
-							speed={ this.state.speed }
-							startAnimation={ this.startAnimation }
-							stopAnimation={ this.stopAnimation }
-						/>
 					</div>
 				</div>
-				
-				<Selector select={ this.setPreset }/>
 
-				<canvas
-					height={ 8 * cellSize }
-					ref={ canvas => this.glowCanvas = canvas }
-					style={{ display: 'none', height: 8 * cellSize + 'px', width: 8 * cellSize + 'px' }}
-					width={ 8 * cellSize }
-				/>
+				<Selector select={ this.setPreset } />
 			</div>
-		);	
+		);
 	}
 }
 

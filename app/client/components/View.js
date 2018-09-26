@@ -6,187 +6,142 @@
 **/
 
 
+import PropTypes from 'prop-types';
 import React from 'react';
 
-import { addGlow, drawCell } from '../utils/cells';
-import colors from '../utils/colors';
+import styles from '../styles/gameView.css';
+import { addGlow, COLORS, drawBackground, drawCell, drawGlow } from '../utils/cells';
+import MouseInput from './MouseInput';
 
 
 class View extends React.Component {
+	static propTypes = {
+		cells: PropTypes.array,
+		life: PropTypes.object.isRequired,
+		modifiedCells: PropTypes.object.isRequired,
+		mouseHandler: PropTypes.func.isRequired,
+		presetCells: PropTypes.array
+	};
+
+
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			mouseCell: null,			// cell mouse is over, ie [ int r, int c ]
-			selectedCells: new Set()		// holds cells selected in a mouse drag
+		this.boardHeight = props.life.height;
+		this.boardWidth = props.life.width;
+
+		this.canvasRef = React.createRef();
+		this.glowRef = React.createRef();
+
+		this.state = { cellSize: 10 };
+	}
+
+
+	componentDidMount() {
+		const resizeCanvas = () => {
+			this.setState({ cellSize: this.canvasRef.current.clientWidth / this.boardWidth });
 		};
+
+		window.onresize = resizeCanvas;
+		resizeCanvas();
 	}
 
-	componentWillReceiveProps() {
-		this.setState({ selectedCells: new Set() });
-	}																																				
 
-	// draw the board
-	componentDidUpdate() {
-		const cellSize = this.props.cellSize;
-		const glow = this.props.glow;
+	componentDidUpdate(prevProps, prevState) {
+		const canvasCtx = this.canvasRef.current.getContext('2d');
+		const cellSize = this.state.cellSize;
 
-		this.drawBackground();
-		this.loopOverCells((alive, r, c) => drawCell(this.ctx, alive, r, c, cellSize));
-		this.loopOverCells((alive, r, c) => alive ? addGlow(this.ctx, glow, r, c, cellSize) : null);
-
-		if (this.props.preset && this.state.mouseCell) {
-			this.drawPresetCells();
+		if (prevState.cellSize !== cellSize) {
+			this.renderGlow();
 		}
+
+		const boardWidth = cellSize * this.boardWidth;
+		const boardHeight = cellSize * this.boardHeight;
+
+		drawBackground(canvasCtx, boardWidth, boardHeight);
+
+		this.loopOverCells((alive, r, c) => {
+			drawCell(canvasCtx, alive, r, c, cellSize);
+		});
+
+		this.loopOverCells((alive, r, c) => {
+			alive && addGlow(canvasCtx, this.glowRef.current, r, c, cellSize);
+		});
+
+		this.drawOtherCells(canvasCtx);
 	}
 
-
-
-	//-------------------------------------------------------------
-	//									Utils for drawing board
-	//-------------------------------------------------------------
-
-	validCell(row, col) {
-		return this.props.cells[row] && this.props.cells[row][col] != undefined;
-	}
-
-	drawBackground() {
-		const boardWidth = this.props.cellSize * this.props.columns;
-		const boardHeight = this.props.cellSize * this.props.rows;
-		
-		this.ctx.fillStyle = colors.cellBorder;
-		this.ctx.fillRect(0, 0, boardWidth, boardHeight);
-	}
 
 	loopOverCells(cb) {
-		this.props.cells.forEach((row, r) => {
+		(this.props.cells || []).forEach((row, r) => {
 			row.forEach((cell, c) => cb(cell, r, c));
 		});
 	}
 
-	// draw a preset structure under the mouse position
-	drawPresetCells = () => {
-		this.props.preset.forEach(([row, col]) => {
-			row += this.state.mouseCell[0];
-			col += this.state.mouseCell[1];
 
-			// no need to draw if cell is already alive (ie already drawn)
-			if (this.validCell(row, col) && !this.props.cells[row][col]) {
-				drawCell(this.ctx, colors.liveCell, row, col, this.props.cellSize);
+	renderGlow() {
+		const ctx = this.glowRef.current.getContext('2d');
+		const radius = 4 * this.state.cellSize;
+		drawGlow(ctx, radius, COLORS.gradientStart, COLORS.gradientStop);
+	}
+
+
+	drawOtherCells(ctx) {
+		const cellSize = this.state.cellSize;
+		const glowCanvas = this.glowRef.current;
+
+		this.props.modifiedCells.forEach((locStr) => {
+			const [row, col] = locStr.split(':').map(Number);
+
+			drawCell(ctx, !this.props.cells[row][col], row, col, cellSize);
+
+			if (!this.props.cells[row][col]) {
+				addGlow(ctx, glowCanvas, row, col, cellSize);
 			}
+		});
+
+		(this.props.presetCells || []).forEach(([ row, col ]) => {
+			drawCell(ctx, true, row, col, cellSize);
+			addGlow(ctx, glowCanvas, row, col, cellSize);
 		});
 	}
 
 
-
-	//-------------------------------------------------------------
-	//							Utils for toggling cells in view
-	//-------------------------------------------------------------
-
-	placePreset(row, col) {
-		const toToggle = [];
-
-		this.props.preset.forEach(([r, c]) => {
-			r += row;
-			c += col;
-
-			if (this.validCell(r, c) && !this.props.cells[r][c]) {
-				toToggle.push(r + ':' + c);
-			}
-		});
-
-		this.setState({ mouseCell: null }, this.props.toggleCells.bind(null, toToggle, true));	
-	}
-
-	// toggles a cell between alive/dead in the view but not the model
-	toggleCell(r, c) {
-		drawCell(this.ctx, !this.props.cells[r][c], r, c, this.props.cellSize);
-		
-		if (!this.props.cells[r][c]) {
-			addGlow(this.ctx, this.props.glow, r, c, this.props.cellSize);
-		}
-	}
-
-
-
-	//-------------------------------------------------------------
-	//										Mouse event handlers
-	//-------------------------------------------------------------
-
-	// update model by placing preset structure or toggling selected cell(s)
-	handleClick = e => {
-		if (this.props.animating) return;
-
-		const row = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
-		const col = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
-
-		if (!this.validCell(row, col)) return;
-			
-		if (this.props.preset) {
-			this.placePreset(row, col);
-		} else if (this.state.selectedCells.size) {
-			this.props.toggleCells(this.state.selectedCells);
-		} else {
-			this.props.toggleCells([ row + ':' + col ]);
-		}
-	}
-
-	handleMouseLeave = () => {
-		if (this.props.animating) return;
-
-		this.setState({ mouseCell: null }, () => {
-			if (this.state.selectedCells.size) {
-				this.props.toggleCells(this.state.selectedCells, false);			// update model
-			}
-		});
-	}
-
-	// if a drag add cell to selected cells, if not update mouse pos in state (will draw
-	// preset on update if one exists)
-	handleMouseMove = e => {
-		if (this.props.animating) return;
-
-		const row = Math.floor(e.nativeEvent.offsetY / this.props.cellSize);
-		const col = Math.floor(e.nativeEvent.offsetX / this.props.cellSize);
-
-		if (!this.validCell(row, col)) return;
-
-		let button = 0;
-
-		if (e.buttons != undefined) {
-			button = e.buttons;
-		} else if (e.nativeEvent.which != undefined) {
-			button = e.nativeEvent.which;
-		}
-
-		if (button == 1 && !this.props.preset) {
-			if (!this.state.selectedCells.has(row + ':' + col)) {
-				this.toggleCell(row, col);
-				this.state.selectedCells.add(row + ':' + col);
-			}
-		} else {
-			this.setState({ mouseCell: [ row, col ] });
-		}
+	mouseHandler = (event) => {
+		this.props.mouseHandler(event, this.state.cellSize);
 	}
 
 
 	render() {
 		return (
-			<canvas
-				height={ this.props.cellSize * this.props.rows }
-				id='life-canvas'
-				onClick={ this.handleClick }
-				onDrag={ e => console.log(e.buttons, e.nativeEvent.offsetX, e.nativeEvent.offsetY) }
-				onMouseLeave={ this.handleMouseLeave }
-				onMouseMove={ this.handleMouseMove }
-				ref={ canvas => canvas ? this.ctx = canvas.getContext('2d') : null }
-				width={ this.props.cellSize * this.props.columns }
-			> 
-			</canvas>
+			<React.Fragment>
+				<canvas
+					ref={ this.canvasRef }
+					className={ styles.lifeCanvas }
+					height={ this.state.cellSize * this.boardHeight }
+					width={ this.state.cellSize * this.boardWidth }
+					onClick={ this.mouseHandler }
+					onMouseDown={ this.mouseHandler }
+					onMouseEnter={ this.mouseHandler }
+					onMouseLeave={ this.mouseHandler }
+					onMouseMove={ this.mouseHandler }
+					onMouseUp={ this.mouseHandler }
+				/>
+				<canvas
+					ref={ this.glowRef }
+					height={ 8 * this.state.cellSize }
+					style={{
+						display: 'none',
+						height: 8 * this.state.cellSize + 'px',
+						width: 8 * this.state.cellSize + 'px'
+					}}
+					width={ 8 * this.state.cellSize }
+				/>
+			</React.Fragment>
 		);
 	}
 }
 
 
-export default View;
+export default MouseInput(View);
 

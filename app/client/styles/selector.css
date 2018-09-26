@@ -1,0 +1,71 @@
+
+
+.selectorContainer {
+	align-items: center;
+	background-color: transparent;
+	display: flex;
+	height: 70vh;
+	position: absolute;
+	top: 15vh;
+	transition: left 500ms ease-out;
+	width: 450px;
+}
+
+
+.selectorContent {
+	background-color: #d83422;
+	border-left: none;
+	border-radius: 0 5px 5px 0;
+	border: 1px solid rgba(0, 0, 0, .5);
+	box-shadow: 0 0 20px 1px black;
+	padding: 10px 10px 20px;
+}
+
+
+.selectorContent > p {
+	font-size: 25px;
+	font-weight: 700;
+	text-align: center;
+	text-shadow: 1px 1px 1px #3f3f3f;
+}
+
+
+.selectorContent > div {
+	background-color: #040404;
+	display: flex;
+	flex-direction: column;
+	height: 60vh;
+	overflow: auto;
+}
+
+
+.presetCategory {
+	margin: 10px 15px;
+}
+
+
+.presetCategory > p {
+	color: orange;
+	font-size: 20px;
+	margin-bottom: 10px;
+	text-decoration: underline;
+}
+
+.presetCategory > canvas {
+	margin: 20px;
+	cursor: pointer;
+}
+
+
+.selectorToggle {
+	background-color: #d83422;
+	border: 1px solid rgba(0, 0, 0, .5);
+	border-radius: 0 7px 7px 0;
+	border-left-width: 0;
+	box-sizing: border-box;
+	cursor: pointer;
+	margin-left: -1px;
+	padding: 3px;
+	width: 43px;
+}
+

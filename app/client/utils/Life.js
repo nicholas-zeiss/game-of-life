@@ -7,58 +7,80 @@
 **/
 
 
+import { BehaviorSubject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+
+
 const emptyBoard = (width, height) => (
-	new Array(height)
-		.fill(1)
-		.map(() => (
-			new Array(width)
-				.fill(0)
-		))
+	new Array(height).fill(1).map(() => new Array(width).fill(false))
 );
+
+const equalBoards = (a, b) => (
+	a.every((rA, i) => rA.every((cA, j) => cA === b[i][j]))
+);
+
+// a cells neighbors wrap arounds the edge of the board, so this is used to
+// adjust the index accordingly
+const wrapIndex = (index, length) => {
+	if (index < 0) {
+		return length - 1;
+	} else if (index === length) {
+		return 0;
+	}
+	return index;
+};
+
+const percentSpeedToMS = percent => 20 + percent * 300;
 
 
 class Life {
-	constructor(width, height) {
-		this.board = emptyBoard(width, height);
-		this.generation = 0;
+	_animationInterval = null;
+	_animationSpeed = .5;																// ranges from 0 to 1
+	_animatingSubject = new BehaviorSubject(false);
+	_gen = 0;
+	_genSubject = new BehaviorSubject(0);
+	animationSpeedSubject = new BehaviorSubject(.5);
+
+	constructor(width = 80, height = 40) {
+		this._board = emptyBoard(width, height);
+		this._boardSubject = new BehaviorSubject(this._board);
 		this.height = height;
 		this.width = width;
+
+		this.animationSpeedSubject
+			.pipe(distinctUntilChanged(), debounceTime(100))
+			.subscribe(this.changeSpeed);
 	}
 
 
-	flipCellState(row, col) {
-		this.board[row][col] = this.board[row][col] ? 0 : 1;
+	get animating() {
+		return this._animatingSubject;
 	}
 
 
-	// updates board and returns if any live cells remain so that we know
-	// to stop running simulation
-	updateBoard() {
-		const newBoard = emptyBoard(this.width, this.height);
-		let anyAlive = false;
+	get board() {
+		return this._boardSubject.pipe(
+			distinctUntilChanged(equalBoards),
+			map(board => board.map(row => [...row]))
+		);
+	}
 
-		for (let r = 0; r < this.height; r++) {
-			for (let c = 0; c < this.width; c++) {
-				const count = this.countLiveNeighbors(r, c);
 
-				if (count < 2) {
-					newBoard[r][c] = 0;
-				} else if (count == 2) {
-					newBoard[r][c] = this.board[r][c];
-					anyAlive = !!newBoard[r][c] || anyAlive;
-				} else if (count == 3) {
-					newBoard[r][c] = 1;
-					anyAlive = true;
-				} else {
-					newBoard[r][c] = 0;
-				}
-			}
-		}
+	get generation() {
+		return this._genSubject;
+	}
 
-		this.generation++;
-		this.board = newBoard;
 
-		return anyAlive;
+	flipCellStates(cellSet) {
+		const boardCopy = this._board.map(row => [...row]);
+
+		cellSet.forEach((cell) => {
+			const [row, col] = cell.split(':');
+			boardCopy[row][col] = !this._board[row][col];
+		});
+
+		this._boardSubject.next(boardCopy);
+		this._board = boardCopy;
 	}
 
 
@@ -66,39 +88,99 @@ class Life {
 		let count = 0;
 
 		for (let r = -1; r < 2; r++) {
-			for (let c = - 1; c < 2; c++) {
-				if (r == 0 && c == 0) continue;
+			for (let c = -1; c < 2; c++) {
+				if (r === 0 && c === 0) continue;
 
-				const nRow = wrap(row + r, this.height);
-				const nCol = wrap(col + c, this.width);
+				const nRow = wrapIndex(row + r, this.height);
+				const nCol = wrapIndex(col + c, this.width);
 
-				this.board[nRow][nCol] ? count++ : null;
+				this._board[nRow][nCol] ? count++ : null;
 			}
 		}
 
 		return count;
+	}
 
-		function wrap(index, length) {
-			if (index == -1) {
-				return length - 1;
-			} else if (index == length) {
-				return 0;
+
+	// updates board and returns whether there are any live cells remaining
+	// so that we know if we need to stop running the simulation
+	updateBoard() {
+		const newBoard = emptyBoard(this.width, this.height);
+
+		let change = false;
+		let anyAlive = false;
+
+		for (let r = 0; r < this.height; r++) {
+			for (let c = 0; c < this.width; c++) {
+				const count = this.countLiveNeighbors(r, c);
+
+				if (count === 2) {
+					newBoard[r][c] = this._board[r][c];
+				} else if (count === 3) {
+					newBoard[r][c] = true;
+				} else {
+					newBoard[r][c] = false;
+				}
+
+				anyAlive = anyAlive || newBoard[r][c];
+				change = change || newBoard[r][c] !== this._board[r][c];
 			}
-			return index;
+		}
+
+		this._genSubject.next(++this._gen);
+
+		if (change) {
+			this._board = newBoard;
+			this._boardSubject.next(newBoard);
+		}
+
+		return anyAlive;
+	}
+
+
+	changeSpeed = (speed) => {
+		this._animationSpeed = speed;
+
+		if (this._animationInterval !== null) {
+			this.stopAnimation();
+			this.startAnimation();
 		}
 	}
 
 
-	clear() {
-		this.board = emptyBoard(this.width, this.height);
-		this.generation = 0;
+	startAnimation = () => {
+		if (this._animationInterval !== null) {
+			return;
+		}
+
+		const delay = percentSpeedToMS(this._animationSpeed);
+
+		this._animationInterval = setInterval(() => {
+			const anyAlive = this.updateBoard();
+
+			if (!anyAlive) {
+				this.stopAnimation();
+			}
+		}, delay);
+
+		this._animatingSubject.next(true);
 	}
 
 
-	toString() {
-		return this.board
-			.map(row => row.join(' '))
-			.join('\n');
+	stopAnimation = () => {
+		if (this._animationInterval) {
+			clearInterval(this._animationInterval);
+			this._animationInterval = null;
+			this._animatingSubject.next(false);
+		}
+	}
+
+
+	clear = () => {
+		this.stopAnimation();
+		this._board = emptyBoard(this.width, this.height);
+		this._boardSubject.next(this._board);
+		this._genSubject.next(this._gen = 0);
 	}
 }
 
