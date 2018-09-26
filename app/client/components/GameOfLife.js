@@ -4,6 +4,9 @@
  *	where 0 is a dead cell and 1 a live cell). It also holds all the logic to update the model as necessary. It has subcomponents View and
  *	Controls, which render the game and handle user input.
  *
+ *	The component's state also holds the generation of the game (integer), and if the user has selected a preset to place on the board
+ *	it is stored as a Set in selectedPreset.
+ *
 **/
 
 
@@ -48,6 +51,8 @@ class GameOfLife extends React.Component {
 	}
 
 
+	// flips the cells stored in Set cellSet, cells are represented by strings
+	// of form `${rowIndex}:${colIndex}`
 	toggleCells = (cellSet, clearPreset = false) => {
 		if (!cellSet.size && !cellSet.length) {
 			return;
@@ -62,9 +67,9 @@ class GameOfLife extends React.Component {
 	}
 
 
-	setPreset = (cells) => {
+	setPreset = (cellSet) => {
 		document.getElementById('app').style.cursor = 'move';
-		this.setState({ selectedPreset: cells }, this.state.life.stopAnimation);
+		this.setState({ selectedPreset: cellSet }, this.state.life.stopAnimation);
 	}
 
 
@@ -99,7 +104,7 @@ class GameOfLife extends React.Component {
 					</div>
 				</div>
 
-				<Selector select={ this.setPreset } />
+				<Selector selectPreset={ this.setPreset } />
 			</div>
 		);
 	}

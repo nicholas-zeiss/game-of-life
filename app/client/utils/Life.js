@@ -75,7 +75,7 @@ class Life {
 		const boardCopy = this._board.map(row => [...row]);
 
 		cellSet.forEach((cell) => {
-			const [row, col] = cell.split(':');
+			const [ row, col ] = cell.split(':');
 			boardCopy[row][col] = !this._board[row][col];
 		});
 

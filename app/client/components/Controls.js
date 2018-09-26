@@ -1,6 +1,7 @@
 /**
  *
- *	Holds various buttons used to manipulate the game of life through callbacks
+ *	Holds various buttons used to manipulate the game of life through callbacks. Can play/pause, reset the game, and
+ *	adjust the speed at which it animates.
  *
 **/
 
@@ -34,11 +35,12 @@ class Controls extends React.PureComponent {
 
 	toggleAnimation = () => {
 		this.state.animating ? this.props.stopAnimation() : this.props.startAnimation();
-	};
+	}
 
 
 	updateSpeed = (event) => {
-		this.props.speedSubject.next(1 - (event.target.value / 100));
+		const percentSpeed = 1 - (event.target.value / 100);
+		this.props.speedSubject.next(percentSpeed);
 	}
 
 
@@ -51,7 +53,7 @@ class Controls extends React.PureComponent {
 						type='button'
 						onClick={ this.toggleAnimation }
 					>
-						<i className='material-icons' style={{ 'font-size': '30px' }}>
+						<i className='material-icons' style={{ fontSize: '30px' }}>
 							{ this.state.animating ? 'pause' : 'play_arrow' }
 						</i>
 					</button>
@@ -62,7 +64,7 @@ class Controls extends React.PureComponent {
 				</div>
 
 				<div className={ styles.sliderContainer }>
-					<span style={{ 'margin-right': '10px' }}> Slower </span>
+					<span style={{ marginRight: '10px' }}> Slower </span>
 					<input
 						className={ styles.slider }
 						defaultValue={ this.state.speed * 100 }
@@ -71,7 +73,7 @@ class Controls extends React.PureComponent {
 						type='range'
 						onInput={ this.updateSpeed }
 					/>
-					<span style={{ 'margin-left': '10px' }}> Faster </span>
+					<span style={{ marginLeft: '10px' }}> Faster </span>
 				</div>
 			</div>
 		);

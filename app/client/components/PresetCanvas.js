@@ -1,4 +1,9 @@
-
+/**
+ *
+ *	A simple pure component for rendering a preset cell structure to a canvas element without the glow effect. On click the preset
+ *	is selected via callback.
+ *
+**/
 
 import PropTypes from 'prop-types';
 import React from 'react';

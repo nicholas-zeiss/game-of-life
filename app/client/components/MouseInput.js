@@ -1,6 +1,8 @@
 /**
  *
- *	Wraps View component and handles user mouse input.
+ *	Wraps View component, feeding it the state of the game board and the state of any cells modified by user input
+ *	or a selected preset. Additionally, it provides mouse event handlers for user input, and handles all the logic
+ *	of updating the game's state.
  *
 **/
 
@@ -75,7 +77,8 @@ const MouseInput = (View) => {
 		}
 
 
-		handleClick = (row, col) => {
+		// handles placing of preset or flipping of a single cell
+		handleClick(row, col) {
 			if (!this.props.preset) {
 				this.props.toggleCells([ row + ':' + col ]);
 				return;
@@ -96,7 +99,9 @@ const MouseInput = (View) => {
 		}
 
 
-		handleUp = (type) => {
+		// if there are any cells that have been modified, this mouse up event represents
+		// the end of a user drag selection, modified cells must be updated in the model
+		handleUp(type) {
 			const update = { mouseDown: false };
 
 			if (this.state.modifiedCells.size) {
@@ -111,7 +116,9 @@ const MouseInput = (View) => {
 		}
 
 
-		handleMove = (row, col) => {
+		// if preset exists, update mouse position in state to ensure proper rendering of preset
+		// if not and user is in a drag, add cell to modifiedCells if not already present
+		handleMove(row, col) {
 			const locStr = row + ':' + col;
 			const stateLocStr = this.state.mouseCell.row + ':' + this.state.mouseCell.col;
 
@@ -124,6 +131,8 @@ const MouseInput = (View) => {
 		}
 
 
+		// creates an array of cell strings representing the current preset being placed at
+		// the current mouse position
 		getAdjustedPreset() {
 			if (this.state.animating || !this.props.preset || !this.state.mouseCell) {
 				return null;

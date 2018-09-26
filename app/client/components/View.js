@@ -1,7 +1,15 @@
 /**
  *
  *	This component renders our game of life to the DOM using a canvas element and allows users to toggle cells by clicking a cell or dragging
- *	the mouse across multiple cells. If a cell is touched more than once during a drag it is only toggled one time.
+ *	the mouse across multiple cells. If a cell is touched more than once during a drag it is only toggled one time. If the user has selected
+ *	a preset, clicking a cell places the preset on it.
+ *
+ *	This component expects a plain 2d array representation of the cells and it modifies the cells via mouse handler callbacks provided in props.
+ *	This is accomplished by using the HOC MouseInput. MouseInput is responsible for handling user input and maniputaling the game, the
+ *	unaltered View component simply renders the game.
+ *
+ *	In order to avoid unnecessary and costly renderings of the transparent radial gradient used for the glowing effect, this is rendered once
+ *	in a seperate canvas with a display value of none, and then copied into the main canvas as needed. It is only rerendered on resizing.
  *
 **/
 
@@ -16,12 +24,12 @@ import MouseInput from './MouseInput';
 
 class View extends React.Component {
 	static propTypes = {
-		cells: PropTypes.array,
+		cells: PropTypes.array,												// main game board
 		life: PropTypes.object.isRequired,
-		modifiedCells: PropTypes.object.isRequired,
+		modifiedCells: PropTypes.object.isRequired,		// cells that have been flipped by user input but not toggled in game model
 		mouseHandler: PropTypes.func.isRequired,
-		presetCells: PropTypes.array
-	};
+		presetCells: PropTypes.array									// if preset selected, holds cells that would be altered by clicking the cell the
+	};																							// mouse is currently over
 
 
 	constructor(props) {
@@ -33,7 +41,7 @@ class View extends React.Component {
 		this.canvasRef = React.createRef();
 		this.glowRef = React.createRef();
 
-		this.state = { cellSize: 10 };
+		this.state = { cellSize: 10 };			// in px units
 	}
 
 
@@ -47,6 +55,7 @@ class View extends React.Component {
 	}
 
 
+	// the method ultimately responsible for drawing the game to the canvas
 	componentDidUpdate(prevProps, prevState) {
 		const canvasCtx = this.canvasRef.current.getContext('2d');
 		const cellSize = this.state.cellSize;
@@ -86,6 +95,8 @@ class View extends React.Component {
 	}
 
 
+	// draws cells modified by user input but not yet altered in model and any
+	// cells in a user selected preset that is being placed
 	drawOtherCells(ctx) {
 		const cellSize = this.state.cellSize;
 		const glowCanvas = this.glowRef.current;
