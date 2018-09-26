@@ -33,9 +33,7 @@ class Selector extends React.PureComponent {
 
 
 	toggle = () => {
-		this.setState(prev => (
-			{ open: !prev.open }
-		));
+		this.setState(prev => ({ open: !prev.open }));
 	}
 
 
@@ -46,12 +44,16 @@ class Selector extends React.PureComponent {
 
 
 	createPresetCanvas = preset => (
-		<PresetCanvas key={ preset.name } { ...preset } select={ this.selectPreset } />
+		<PresetCanvas
+			key={ preset.name }
+			{ ...preset }
+			select={ this.selectPreset }
+		/>
 	)
 
 
 	render() {
-		const cntrStyle = this.state.open ? { left: '0px' } : null;
+		const cntrStyle = { left: this.state.open ? '0px' : '-405px' };
 
 		const presetGroups = presetTypes.map(([ groupName, presets ]) => (
 			<div key={ groupName + '-category' } className={ styles.presetCategory }>
@@ -67,7 +69,18 @@ class Selector extends React.PureComponent {
 					<div>{ presetGroups }</div>
 				</section>
 
-				<button  className={ styles.selectorToggle } onClick={ this.toggle } type='button'> &#8811; </button>
+				<button
+					className={ styles.selectorToggle }
+					type='button'
+					onClick={ this.toggle }
+				>
+					<i
+						className='material-icons'
+						style={{ 'font-size': '36px' }}
+					>
+						arrow_forward_ios
+					</i>
+				</button>
 			</aside>
 		);
 	}

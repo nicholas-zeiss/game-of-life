@@ -5,7 +5,6 @@
 	background-color: transparent;
 	display: flex;
 	height: 70vh;
-	left: -405px;
 	position: absolute;
 	top: 15vh;
 	transition: left 500ms ease-out;
@@ -27,16 +26,15 @@
 	font-size: 25px;
 	font-weight: 700;
 	text-align: center;
+	text-shadow: 1px 1px 1px #3f3f3f;
 }
 
 
 .selectorContent > div {
-	align-items: flex-start;
 	background-color: #040404;
 	display: flex;
 	flex-direction: column;
 	height: 60vh;
-	margin-top: 15px;
 	overflow: auto;
 }
 
@@ -61,13 +59,13 @@
 
 .selectorToggle {
 	background-color: #d83422;
-	border-left: none;
-	border-radius: 0 5px 5px 0;
 	border: 1px solid rgba(0, 0, 0, .5);
+	border-radius: 0 7px 7px 0;
+	border-left-width: 0;
+	box-sizing: border-box;
 	cursor: pointer;
-	font-size: 35px;
 	margin-left: -1px;
-	padding: 0 5px 2px 5px;
-	z-index: 2;
+	padding: 3px;
+	width: 43px;
 }
 

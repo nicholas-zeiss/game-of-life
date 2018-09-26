@@ -4,9 +4,9 @@ body {
 	background-color: #d5daef;
 	color: #ececec;
 	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
 	font-weight: 400;
 	margin: 0;
-	text-shadow: 1px 1px 1px #3f3f3f;
   user-select: none;
 }
 
@@ -54,11 +54,7 @@ button {
 
 
 .header > p {
-	box-sizing: border-box;
-	font-size: 16px;
 	margin: 0;
-	padding: 0;
-	text-align-last: right;
 	text-align: right;
 }
 
@@ -68,13 +64,11 @@ button {
 	display: flex;
 	flex: 1 1 auto;
 	justify-content: center;
-	width: 100%;
 }
 
 
 .viewControlsContainer {
 	align-items: center;
-	box-sizing: content-box;
 	display: flex;
 	flex-direction: column;
 	min-width: 550px;
@@ -87,10 +81,8 @@ button {
 
 
 .viewContainer {
-	align-self: flex-start;
 	font-size: 22px;
 	font-weight: 700;
-	margin-left: 2.5%;
 	margin-top: 10px;
 	width: 95%;
 }

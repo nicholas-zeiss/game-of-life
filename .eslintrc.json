@@ -27,11 +27,6 @@
 			{ "requireForBlockBody": true}
 		],
 		"arrow-spacing": "error",
-		"capitalized-comments": [
-			"warn",
-			"always",
-			{ "ignoreConsecutiveComments": true }
-		],
 		"comma-dangle": "error",
 		"comma-spacing": [
 			"error",

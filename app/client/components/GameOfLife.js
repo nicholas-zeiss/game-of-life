@@ -27,14 +27,13 @@ class GameOfLife extends React.Component {
 	constructor(props) {
 		super(props);
 
-		const game = new Life(GameOfLife.gameWidth, GameOfLife.gameHeight);
-
 		this.state = {
 			generation: 0,
-			life: game,
+			life: new Life(GameOfLife.gameWidth, GameOfLife.gameHeight),
 			selectedPreset: null
 		};
 
+		// load a preset and offset it by 10 cells from top left corner
 		const cellSet = OSCILLATORS[3].cells.reduce((cells, [r, c]) => (
 			cells.add(`${r + 10}:${c + 10}`) && cells
 		), new Set());
@@ -44,7 +43,8 @@ class GameOfLife extends React.Component {
 
 
 	componentDidMount() {
-		this.state.life.generation.subscribe(generation => this.setState({ generation }));
+		const currGeneration = this.state.life.generation;
+		currGeneration.subscribe(generation => this.setState({ generation }));
 	}
 
 

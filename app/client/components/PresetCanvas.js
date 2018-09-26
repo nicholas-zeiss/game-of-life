@@ -26,7 +26,10 @@ class Preset extends React.PureComponent {
 
 	componentDidMount() {
 		const ctx = this.canvasRef.current.getContext('2d');
-		this.props.cells.forEach(([r, c]) => drawCell(ctx, COLORS.liveCell, r, c, cellSize));
+
+		this.props.cells.forEach(([r, c]) => (
+			drawCell(ctx, COLORS.liveCell, r, c, cellSize)
+		));
 	}
 
 
@@ -40,9 +43,9 @@ class Preset extends React.PureComponent {
 				<canvas
 					ref={ this.canvasRef }
 					height={ cellSize *	this.props.height }
-					onClick={ this.selectCells }
 					style={{ cursor: 'pointer' }}
 					width={ cellSize *this.props.width }
+					onClick={ this.selectCells }
 				/>
 			</React.Fragment>
 		);

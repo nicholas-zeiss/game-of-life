@@ -8,7 +8,8 @@
 
 
 import { BehaviorSubject } from 'rxjs';
-import { bufferTime, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+
 
 const emptyBoard = (width, height) => (
 	new Array(height).fill(1).map(() => new Array(width).fill(false))
@@ -18,6 +19,8 @@ const equalBoards = (a, b) => (
 	a.every((rA, i) => rA.every((cA, j) => cA === b[i][j]))
 );
 
+// a cells neighbors wrap arounds the edge of the board, so this is used to
+// adjust the index accordingly
 const wrapIndex = (index, length) => {
 	if (index < 0) {
 		return length - 1;
@@ -27,13 +30,12 @@ const wrapIndex = (index, length) => {
 	return index;
 };
 
-
 const percentSpeedToMS = percent => 20 + percent * 300;
 
 
 class Life {
 	_animationInterval = null;
-	_animationSpeed = .5;
+	_animationSpeed = .5;																// ranges from 0 to 1
 	_animatingSubject = new BehaviorSubject(false);
 	_gen = 0;
 	_genSubject = new BehaviorSubject(0);
@@ -100,8 +102,8 @@ class Life {
 	}
 
 
-	// Updates board and returns if any live cells remain so that we know
-	// to stop running simulation
+	// updates board and returns whether there are any live cells remaining
+	// so that we know if we need to stop running the simulation
 	updateBoard() {
 		const newBoard = emptyBoard(this.width, this.height);
 
@@ -155,6 +157,7 @@ class Life {
 
 		this._animationInterval = setInterval(() => {
 			const anyAlive = this.updateBoard();
+
 			if (!anyAlive) {
 				this.stopAnimation();
 			}

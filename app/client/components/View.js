@@ -55,14 +55,18 @@ class View extends React.Component {
 			this.renderGlow();
 		}
 
-		drawBackground(
-			canvasCtx,
-			cellSize * this.boardWidth,
-			cellSize * this.boardHeight
-		);
+		const boardWidth = cellSize * this.boardWidth;
+		const boardHeight = cellSize * this.boardHeight;
 
-		this.loopOverCells((alive, r, c) => drawCell(canvasCtx, alive, r, c, cellSize));
-		this.loopOverCells((alive, r, c) => alive && addGlow(canvasCtx, this.glowRef.current, r, c, cellSize));
+		drawBackground(canvasCtx, boardWidth, boardHeight);
+
+		this.loopOverCells((alive, r, c) => {
+			drawCell(canvasCtx, alive, r, c, cellSize);
+		});
+
+		this.loopOverCells((alive, r, c) => {
+			alive && addGlow(canvasCtx, this.glowRef.current, r, c, cellSize);
+		});
 
 		this.drawOtherCells(canvasCtx);
 	}
@@ -88,6 +92,7 @@ class View extends React.Component {
 
 		this.props.modifiedCells.forEach((locStr) => {
 			const [row, col] = locStr.split(':').map(Number);
+
 			drawCell(ctx, !this.props.cells[row][col], row, col, cellSize);
 
 			if (!this.props.cells[row][col]) {
@@ -95,7 +100,7 @@ class View extends React.Component {
 			}
 		});
 
-		(this.props.presetCells || []).forEach(([ row, col]) => {
+		(this.props.presetCells || []).forEach(([ row, col ]) => {
 			drawCell(ctx, true, row, col, cellSize);
 			addGlow(ctx, glowCanvas, row, col, cellSize);
 		});
@@ -114,13 +119,13 @@ class View extends React.Component {
 					ref={ this.canvasRef }
 					className={ styles.lifeCanvas }
 					height={ this.state.cellSize * this.boardHeight }
+					width={ this.state.cellSize * this.boardWidth }
 					onClick={ this.mouseHandler }
 					onMouseDown={ this.mouseHandler }
 					onMouseEnter={ this.mouseHandler }
 					onMouseLeave={ this.mouseHandler }
 					onMouseMove={ this.mouseHandler }
 					onMouseUp={ this.mouseHandler }
-					width={ this.state.cellSize * this.boardWidth }
 				/>
 				<canvas
 					ref={ this.glowRef }

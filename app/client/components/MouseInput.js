@@ -55,10 +55,9 @@ const MouseInput = (View) => {
 			const valid = this.validCell(row, col);
 
 			if (event.type === 'mouseenter') {
-				const down = event.nativeEvent.buttons === 1;
 				this.setState({
 					mouseCell: { row, col },
-					mouseDown: down
+					mouseDown: event.nativeEvent.buttons === 1
 				});
 
 			} else if (event.type === 'click' && valid) {
@@ -77,22 +76,23 @@ const MouseInput = (View) => {
 
 
 		handleClick = (row, col) => {
-			if (this.props.preset) {
-				const toToggle = [];
-
-				this.props.preset.forEach(([r, c]) => {
-					r += row;
-					c += col;
-
-					if (this.validCell(r, c) && !this.state.cells[r][c]) {
-						toToggle.push(r + ':' + c);
-					}
-				});
-
-				this.props.toggleCells(toToggle, true);
-			} else {
+			if (!this.props.preset) {
 				this.props.toggleCells([ row + ':' + col ]);
+				return;
 			}
+
+			const toToggle = [];
+
+			this.props.preset.forEach(([r, c]) => {
+				r += row;
+				c += col;
+
+				if (this.validCell(r, c) && !this.state.cells[r][c]) {
+					toToggle.push(r + ':' + c);
+				}
+			});
+
+			this.props.toggleCells(toToggle, true);
 		}
 
 

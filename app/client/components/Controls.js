@@ -48,26 +48,30 @@ class Controls extends React.PureComponent {
 				<div className={ styles.playBackContainer }>
 					<button
 						className={ this.state.animating ? styles.pause : styles.play }
-						onClick={ this.toggleAnimation }
 						type='button'
+						onClick={ this.toggleAnimation }
 					>
-						{ this.state.animating ?  '\u2590\u2590' : '\u25B6' }
+						<i className='material-icons' style={{ 'font-size': '30px' }}>
+							{ this.state.animating ? 'pause' : 'play_arrow' }
+						</i>
 					</button>
 
-					<button onClick={ this.props.clear } type='button'>
+					<button type='button' onClick={ this.props.clear }>
 						{ 'Reset' }
 					</button>
 				</div>
 
 				<div className={ styles.sliderContainer }>
+					<span style={{ 'margin-right': '10px' }}> Slower </span>
 					<input
 						className={ styles.slider }
 						defaultValue={ this.state.speed * 100 }
 						max={ 100 }
 						min={ 0 }
-						onInput={ this.updateSpeed }
 						type='range'
+						onInput={ this.updateSpeed }
 					/>
+					<span style={{ 'margin-left': '10px' }}> Faster </span>
 				</div>
 			</div>
 		);

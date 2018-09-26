@@ -1,6 +1,6 @@
 /**
  *
- *  Helpers for drawing cells
+ *  Helpers for drawing cells in canvas elements
  *
 **/
 
