@@ -10,12 +10,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import CellSet from '../utils/cellSet';
+
 
 const MouseInput = (View) => {
 	class WrappedView extends React.Component {
 		static propTypes = {
 			life: PropTypes.object.isRequired,
-			preset: PropTypes.array,
+			preset: PropTypes.object,
 			toggleCells: PropTypes.func.isRequired
 		};
 
@@ -29,7 +31,7 @@ const MouseInput = (View) => {
 			this.state = {
 				animating: false,
 				cells: null,
-				modifiedCells: new Set(),
+				modifiedCells: new CellSet(),
 				mouseCell: null,
 				mouseDown: false
 			};
@@ -80,18 +82,18 @@ const MouseInput = (View) => {
 		// handles placing of preset or flipping of a single cell
 		handleClick(row, col) {
 			if (!this.props.preset) {
-				this.props.toggleCells([ row + ':' + col ]);
+				this.props.toggleCells(new CellSet([row, col]));
 				return;
 			}
 
-			const toToggle = [];
+			const toToggle = new CellSet();
 
 			this.props.preset.forEach(([r, c]) => {
 				r += row;
 				c += col;
 
 				if (this.validCell(r, c) && !this.state.cells[r][c]) {
-					toToggle.push(r + ':' + c);
+					toToggle.add([r, c]);
 				}
 			});
 
@@ -105,8 +107,8 @@ const MouseInput = (View) => {
 			const update = { mouseDown: false };
 
 			if (this.state.modifiedCells.size) {
-				update.modifiedCells = new Set();
-				const cellsCopy = new Set(this.state.modifiedCells);
+				update.modifiedCells = new CellSet();
+				const cellsCopy = this.state.modifiedCells.copy();
 				this.props.toggleCells(cellsCopy, false);
 			}
 
@@ -119,13 +121,14 @@ const MouseInput = (View) => {
 		// if preset exists, update mouse position in state to ensure proper rendering of preset
 		// if not and user is in a drag, add cell to modifiedCells if not already present
 		handleMove(row, col) {
-			const locStr = row + ':' + col;
+			const cell = [row, col];
+			const locStr = cell.join(':');
 			const stateLocStr = this.state.mouseCell.row + ':' + this.state.mouseCell.col;
 
 			if (this.props.preset && locStr !== stateLocStr) {
 				this.setState({ mouseCell: { row, col } });
-			} else if (this.state.mouseDown && !this.state.modifiedCells.has(locStr)) {
-				this.state.modifiedCells.add(locStr);
+			} else if (this.state.mouseDown && !this.state.modifiedCells.hasCell(cell)) {
+				this.state.modifiedCells.add(cell);
 				this.forceUpdate();
 			}
 		}
@@ -138,14 +141,14 @@ const MouseInput = (View) => {
 				return null;
 			}
 
-			const presetCells = [];
+			const presetCells = new CellSet();
 
-			this.props.preset.forEach(([ row, col ]) => {
-				row += this.state.mouseCell.row;
-				col += this.state.mouseCell.col;
+			this.props.preset.forEach((cell) => {
+				cell[0] += this.state.mouseCell.row;
+				cell[1] += this.state.mouseCell.col;
 
-				if (this.validCell(row, col)) {
-					presetCells.push([row, col]);
+				if (this.validCell(...cell)) {
+					presetCells.add(cell);
 				}
 			});
 

@@ -18,6 +18,7 @@ import Selector from './Selector';
 
 import styles from '../styles/styles.css';
 
+import CellSet from '../utils/cellSet';
 import Life from '../utils/Life';
 import OSCILLATORS from '../utils/oscillators';
 
@@ -37,11 +38,13 @@ class GameOfLife extends React.Component {
 		};
 
 		// load a preset and offset it by 10 cells from top left corner
-		const cellSet = OSCILLATORS[3].cells.reduce((cells, [r, c]) => (
-			cells.add(`${r + 10}:${c + 10}`) && cells
-		), new Set());
+		const presetCells = new CellSet();
 
-		this.toggleCells(cellSet);
+		OSCILLATORS[3].cells.forEach(([r, c]) => (
+			presetCells.add([r + 10, c + 10])
+		));
+
+		this.toggleCells(presetCells);
 	}
 
 
@@ -52,7 +55,7 @@ class GameOfLife extends React.Component {
 
 
 	toggleCells = (cellSet, clearPreset = false) => {
-		if (!cellSet.size && !cellSet.length) {
+		if (!cellSet.size) {
 			return;
 		}
 

@@ -48,6 +48,10 @@ class CellSet {
 	}
 
 
+	hasCell(cell) {
+		return this.storedCells.has(toCellStr(cell));
+	}
+
 	copy() {
 		return new CellSet(this.storedCells);
 	}

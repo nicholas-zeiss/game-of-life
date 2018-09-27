@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { COLORS, drawCell } from '../utils/cells';
-
+import CellSet from '../utils/cellSet';
 
 const cellSize = 10;
 
@@ -38,7 +38,9 @@ class Preset extends React.PureComponent {
 	}
 
 
-	selectCells = () => this.props.select(this.props.cells);
+	selectCells = () => this.props.select(
+		new CellSet(this.props.cells)
+	);
 
 
 	render() {

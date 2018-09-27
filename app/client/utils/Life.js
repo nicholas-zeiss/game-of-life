@@ -71,11 +71,10 @@ class Life {
 	}
 
 
-	flipCellStates(cellSet) {
+	flipCellStates(cells) {
 		const boardCopy = this._board.map(row => [...row]);
 
-		cellSet.forEach((cell) => {
-			const [ row, col ] = cell.split(':');
+		cells.forEach(([row, col]) => {
 			boardCopy[row][col] = !this._board[row][col];
 		});
 

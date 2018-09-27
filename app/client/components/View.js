@@ -28,7 +28,7 @@ class View extends React.Component {
 		life: PropTypes.object.isRequired,
 		modifiedCells: PropTypes.object.isRequired,		// cells that have been flipped by user input but not toggled in game model
 		mouseHandler: PropTypes.func.isRequired,
-		presetCells: PropTypes.array									// if preset selected, holds cells that would be altered by clicking the cell the
+		presetCells: PropTypes.object									// if preset selected, holds cells that would be altered by clicking the cell the
 	};																							// mouse is currently over
 
 
@@ -101,9 +101,7 @@ class View extends React.Component {
 		const cellSize = this.state.cellSize;
 		const glowCanvas = this.glowRef.current;
 
-		this.props.modifiedCells.forEach((locStr) => {
-			const [row, col] = locStr.split(':').map(Number);
-
+		this.props.modifiedCells.forEach(([row, col]) => {
 			drawCell(ctx, !this.props.cells[row][col], row, col, cellSize);
 
 			if (!this.props.cells[row][col]) {
@@ -111,7 +109,7 @@ class View extends React.Component {
 			}
 		});
 
-		(this.props.presetCells || []).forEach(([ row, col ]) => {
+		(this.props.presetCells || []).forEach(([row, col]) => {
 			drawCell(ctx, true, row, col, cellSize);
 			addGlow(ctx, glowCanvas, row, col, cellSize);
 		});
