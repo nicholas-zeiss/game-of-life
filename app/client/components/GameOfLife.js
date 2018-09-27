@@ -51,8 +51,6 @@ class GameOfLife extends React.Component {
 	}
 
 
-	// flips the cells stored in Set cellSet, cells are represented by strings
-	// of form `${rowIndex}:${colIndex}`
 	toggleCells = (cellSet, clearPreset = false) => {
 		if (!cellSet.size && !cellSet.length) {
 			return;

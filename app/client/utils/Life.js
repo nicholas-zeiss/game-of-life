@@ -19,6 +19,8 @@ const equalBoards = (a, b) => (
 	a.every((rA, i) => rA.every((cA, j) => cA === b[i][j]))
 );
 
+const percentSpeedToDelay = percent => 20 + (1 - percent) * 300;
+
 // a cells neighbors wrap arounds the edge of the board, so this is used to
 // adjust the index accordingly
 const wrapIndex = (index, length) => {
@@ -29,9 +31,6 @@ const wrapIndex = (index, length) => {
 	}
 	return index;
 };
-
-//
-const percentSpeedToDelay = percent => 20 + (1 - percent) * 300;
 
 
 class Life {
