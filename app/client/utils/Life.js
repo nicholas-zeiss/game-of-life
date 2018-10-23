@@ -8,7 +8,7 @@
 
 
 import { BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { auditTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 
 const emptyBoard = (width, height) => (
@@ -48,7 +48,7 @@ class Life {
 		this.width = width;
 
 		this.animationSpeedSubject
-			.pipe(distinctUntilChanged(), debounceTime(100))
+			.pipe(distinctUntilChanged(), auditTime(350))
 			.subscribe(this.changeSpeed);
 	}
 
@@ -138,6 +138,7 @@ class Life {
 
 
 	changeSpeed = (percentSpeed) => {
+		console.log('changing delay to ', percentSpeedToDelay(percentSpeed));
 		this._animationSpeed = percentSpeed;
 
 		if (this._animationInterval !== null) {
@@ -153,7 +154,7 @@ class Life {
 		}
 
 		const delay = percentSpeedToDelay(this._animationSpeed);
-
+		console.log('starting animation');
 		this._animationInterval = setInterval(() => {
 			const anyAlive = this.updateBoard();
 

@@ -40,8 +40,16 @@ class GameOfLife extends React.Component {
 		// load a preset and offset it by 10 cells from top left corner
 		const presetCells = new CellSet();
 
-		OSCILLATORS[3].cells.forEach(([r, c]) => (
-			presetCells.add([r + 10, c + 10])
+		const pentomino = [
+			[0, 1],
+			[0, 2],
+			[1, 0],
+			[1, 1],
+			[2, 1]
+		];
+
+		pentomino.forEach(([r, c]) => (
+			presetCells.add([r + 20, c + 40])
 		));
 
 		this.toggleCells(presetCells);
